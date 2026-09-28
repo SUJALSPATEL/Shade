@@ -1,4 +1,4 @@
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyError, type FastifyInstance } from 'fastify';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import { ERROR_MESSAGES, type ApiErrorBody } from '@shade/shared';
@@ -49,7 +49,7 @@ export async function buildServer(deps: AppDeps): Promise<FastifyInstance> {
 
   registerAuth(app);
 
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler<FastifyError>((error, request, reply) => {
     if (error instanceof ApiError) {
       // 4xx is the caller's problem and is logged at info; 5xx is ours.
       if (error.status >= 500) request.log.error({ err: error }, error.message);

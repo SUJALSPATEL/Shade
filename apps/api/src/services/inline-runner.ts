@@ -1,11 +1,15 @@
-import { artifactNames } from '@shade/shared';
+import {
+  artifactNames,
+  type ArtifactReport,
+  type JobCompleteRequest,
+  type JobFailRequest,
+} from '@shade/shared';
 import {
   DOCUMENT_SUMMARY,
   markdownByteLength,
   retrieve,
   runExtract,
   runParse,
-  type ArtifactReport,
   type DocumentDescriptor,
   type JobEnvelope,
   type JobStage,
@@ -15,7 +19,6 @@ import {
 import { config } from '../config/env.js';
 import { getStorage } from '../storage/index.js';
 import { artifactKeyFor, completeJob, failJob, reportProgress, startJob } from './jobs.js';
-import type { JobCompleteRequest, JobFailRequest } from '@shade/shared';
 
 /**
  * Inline job runner — the development fallback for `QUEUE_DRIVER=inline`.
