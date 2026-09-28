@@ -1,0 +1,27 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Shade worker — Python dependencies
+#
+#   python -m pip install -r services/worker/requirements.txt
+#
+# Deliberately short. The worker is a container whose entire job is: pop a JSON
+# job off Redis, do the work, POST three kinds of JSON back, write files. Every
+# dependency here is one whose absence would otherwise mean hand-rolling
+# something error-prone.
+#
+# NOT here, on purpose:
+#   requests       — three JSON POSTs over stdlib urllib (see callbacks.py)
+#   python-dotenv  — configuration is environment variables (see config.py)
+#   pydantic-settings — would be a second settings library for ~15 fields
+#   pdfplumber / pypdf / pillow / torch — the current engine is the deterministic
+#                  mock. A real engine adds its own dependencies at the point it
+#                  is implemented, not before.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Schema validation for the job envelope and every callback payload. Pinned to
+# a minor range: pydantic's v2 API is what models.py is written against, and v3
+# will be a deliberate migration, not a surprise on `pip install -U`.
+pydantic>=2.9,<3.0
+
+# Redis client for the job queue. Imported lazily in queue.py so the package and
+# its test suite import cleanly without a Redis server or this dependency.
+redis>=5.0,<7.0

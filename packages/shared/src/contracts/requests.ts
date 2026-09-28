@@ -208,9 +208,6 @@ export const jobCompleteRequestSchema = z.object({
     assetCount: z.number().int().nonnegative(),
     tableCount: z.number().int().nonnegative(),
     markdownBytes: z.number().int().nonnegative(),
-    // Chunks are accepted for convenience but deliberately not persisted as a
-    // column — see the storage rule in docs/data-model.md.
-    chunks: z.array(z.unknown()).optional(),
   }),
   metadata: z.object({
     engine: z.string().max(64),

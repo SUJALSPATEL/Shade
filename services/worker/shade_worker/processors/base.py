@@ -326,9 +326,17 @@ class ProcessingContext:
         Called by each processor once it has reached the stage where a real
         engine would have finished decoding the container — early enough that the
         UI sees the failure *during* processing, which is the point of the demo.
+
+        The stage is reported **before** the failure is raised. That ordering is
+        what makes the simulation honest: a job that dies at ``FETCHING`` (5%)
+        reads as a bug in the pipeline, while one that reaches ``PARSING`` and
+        then reports a damaged file reads as what it is — a document that could
+        not be decoded. Because this only emits on the failure path, it never
+        collides with the stage message the processor reports on success.
         """
         if not self.marked_corrupt:
             return
+        self.stage(stage)
         raise ProcessorFailure.of(
             "CORRUPT_DOCUMENT",
             "The document could not be read: its file structure is damaged. "
@@ -354,6 +362,18 @@ class ProcessingContext:
         """
         operation = self.envelope.operation.lower()
         return f"artifacts/{self.envelope.document_id}/{operation}"
+
+    @property
+    def asset_prefix(self) -> str:
+        """Key prefix for document-scoped assets: ``assets/<documentId>``.
+
+        Deliberately *not* nested under `artifact_prefix`. A figure belongs to
+        the document, not to the run that happened to find it — and matching
+        ``storageKeys.asset`` in ``@shade/shared`` is what lets this worker and
+        the API's inline dev runner write byte-identical keys, so the
+        ``UNIQUE(storage_key)`` upsert stays idempotent whichever one ran.
+        """
+        return f"assets/{self.envelope.document_id}"
 
     def read_raw(self) -> bytes | None:
         """Fetch the uploaded document's bytes.

@@ -516,14 +516,18 @@ class JobDocumentSummary(CamelModel):
 
 
 class JobMetrics(CamelModel):
-    """Summary figures recorded on the job row so list views need no artifact."""
+    """Summary figures recorded on the job row so list views need no artifact.
+
+    Note what is absent: there is no ``chunks`` field. Chunk text is document
+    content, and document content belongs in the JSON artifact in object
+    storage — not in a relational row and not on the completion callback. The
+    counts below are the whole of what the job row needs to render a badge.
+    """
 
     chunk_count: int
     asset_count: int
     table_count: int
     markdown_bytes: int
-    #: Parse only: kept on the job for cheap retrieval-search later.
-    chunks: list[DocumentChunk] | None = None
 
 
 class JobMetadata(CamelModel):

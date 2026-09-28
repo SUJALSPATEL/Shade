@@ -1,0 +1,12 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Shade worker — development dependencies
+#
+#   python -m pip install -r services/worker/requirements-dev.txt
+#
+# The test suite is hermetic: no Redis, no network, no API server. Everything it
+# needs beyond the runtime dependencies is the runner itself.
+# ─────────────────────────────────────────────────────────────────────────────
+
+-r requirements.txt
+
+pytest>=8.0,<9.0

@@ -141,9 +141,12 @@ class ParseProcessor(DocumentProcessor):
             assets=[
                 AssetDescriptor(
                     name=FIGURE_ASSET_NAME,
-                    # Document-scoped so a redelivery overwrites the same object;
-                    # the Markdown's relative link is the stable contract.
-                    storage_key=f"{prefix}/{ASSET_DIR}/{FIGURE_ASSET_NAME}",
+                    # Document-scoped (see `asset_prefix`), so a redelivery
+                    # overwrites the same object rather than accumulating one
+                    # per run. The Markdown's relative link stays `assets/...`
+                    # because the API rewrites it to an authenticated endpoint
+                    # when it renders the artifact.
+                    storage_key=f"{ctx.asset_prefix}/{FIGURE_ASSET_NAME}",
                     mime_type=_SVG_MIME,
                     page_number=3,
                     width=480,
@@ -163,7 +166,7 @@ class ParseProcessor(DocumentProcessor):
             f"{prefix}/document.json", to_wire_json(result), MIME_JSON
         )
         asset_object = ctx.writer.write_text(
-            f"{prefix}/{ASSET_DIR}/{FIGURE_ASSET_NAME}", svg, _SVG_MIME
+            f"{ctx.asset_prefix}/{FIGURE_ASSET_NAME}", svg, _SVG_MIME
         )
         asset_artifacts = [
             _artifact("ASSET", asset_object, label=FIGURE_ASSET_NAME)
@@ -192,9 +195,6 @@ class ParseProcessor(DocumentProcessor):
                 asset_count=len(asset_artifacts),
                 table_count=len(structured.tables),
                 markdown_bytes=markdown_bytes,
-                # Parse only: the API keeps these on the job row so a later
-                # retrieval search needs no artifact fetch.
-                chunks=chunks,
             ),
             metadata=result.metadata,
             result=result,

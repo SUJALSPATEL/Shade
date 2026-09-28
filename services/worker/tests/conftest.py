@@ -11,7 +11,10 @@ wrong place.
 ``python -m pytest services/worker/tests``, so ``services/worker`` (the directory
 that *contains* the ``shade_worker`` package) has to be importable. Pytest only
 puts a test file's own directory on the path, so the parent is added here rather
-than depending on how the command is invoked.
+than depending on how the command is invoked. The worker's own
+``pyproject.toml`` sets the same thing via ``pythonpath`` for the case where
+pytest is invoked from inside ``services/worker``; this insert is what covers
+every other invocation, and it is idempotent.
 """
 
 from __future__ import annotations

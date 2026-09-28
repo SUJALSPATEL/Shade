@@ -13,6 +13,7 @@ import type {
   JobEnvelope,
   JobErrorCode,
   JobFailRequest,
+  JobInput,
   JobProgressRequest,
   Operation,
   ProcessingJob,
@@ -60,8 +61,10 @@ export interface JobInputs {
  *
  * Validating the *combination* here rather than in each route means an EXTRACT
  * job can never be dispatched with no schema, whichever endpoint created it.
+ * The return type is the wire union, so the value that reaches
+ * `buildJobEnvelope` is checked rather than cast into place.
  */
-export function resolveJobInput(operation: Operation, inputs: JobInputs): Record<string, unknown> {
+export function resolveJobInput(operation: Operation, inputs: JobInputs): JobInput {
   switch (operation) {
     case 'PARSE':
       return { ...DEFAULT_PARSE_INPUT, ...(inputs.parseInput ?? {}) };
@@ -162,7 +165,7 @@ export async function createJobForDocument(input: {
     jobId: job.created.id,
     documentId: job.document.id,
     operation: input.operation,
-    jobInput: jobInput as JobEnvelope['input'],
+    jobInput,
     filename: job.document.filename,
     mimeType: job.document.mime_type,
     sizeBytes: Number(job.document.size_bytes),

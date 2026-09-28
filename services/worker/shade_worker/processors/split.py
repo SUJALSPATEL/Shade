@@ -338,9 +338,10 @@ def _artifact(artifact_type: str, written: WrittenObject) -> ArtifactReport:
 def retrievable_chunks() -> Iterator[DocumentChunk]:
     """Chunks the retriever considers, in chunk_id order.
 
-    Exposed for the architecture's future benefit: when the API needs to build a
-    retrieval index from the stored ``metrics.chunks``, this is the filter it
-    should apply, and keeping it here means the two planes cannot drift.
+    Exposed so the API can apply the identical filter when it runs the
+    interactive ``/api/split`` path against a document's stored Parse artifact.
+    Both planes calling this one predicate is what stops the interactive answer
+    and the queued answer from disagreeing about what counts as a passage.
     """
     for chunk in build_chunks():
         if chunk.type in RETRIEVABLE_TYPES:

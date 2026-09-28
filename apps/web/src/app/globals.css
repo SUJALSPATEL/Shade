@@ -1,0 +1,451 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Shade — design tokens
+
+   Dark-first, and deliberately so. The product's subject is a *document*: a
+   white, light object. Everything that reads, measures and restructures it is
+   machinery, and machinery reads better as the dark around the light. That is
+   also where the name comes from — Shade is what sits behind the page.
+
+   The accent is `#6e56cf`. It is not an arbitrary pick: it is the exact fill
+   the mock engine uses for the bars in the figure it extracts
+   (`packages/shared/src/mock/fixture-document.ts`). The brand colour and the
+   product's own output are the same colour, which is why the accent reads as
+   native rather than applied.
+
+   Tokens are declared in `@theme` so Tailwind generates real utilities from
+   them — `bg-surface`, `text-ink-muted`, `border-line`, `bg-accent-soft` — and
+   so there is exactly one place to change a colour. Never write a hex value in
+   a component.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* ── Surfaces, darkest to lightest ─────────────────────────────────────── */
+  --color-canvas: #0a0a0e; /* the page */
+  --color-surface: #101016; /* cards, panels */
+  --color-raised: #16161e; /* inputs, hovered rows */
+  --color-overlay: #1c1c26; /* popovers, menus */
+  --color-line: #23232e; /* the only border colour */
+  --color-line-strong: #32323f; /* focus rings, dividers that must read */
+
+  /* ── Text ──────────────────────────────────────────────────────────────── */
+  --color-ink: #ececf1; /* primary */
+  --color-ink-muted: #9b9bab; /* secondary, labels */
+  --color-ink-faint: #6a6a7a; /* timestamps, hints, disabled */
+
+  /* ── Accent — the extracted-figure violet ──────────────────────────────── */
+  --color-accent: #6e56cf;
+  --color-accent-bright: #8b78e8; /* hover, links, focus */
+  --color-accent-deep: #4c3a9e; /* pressed */
+  --color-accent-soft: #6e56cf1f; /* 12% — tinted chips and panels */
+  --color-accent-line: #6e56cf59; /* 35% — tinted borders */
+
+  /* ── Status ────────────────────────────────────────────────────────────── */
+  --color-positive: #35c88a;
+  --color-positive-soft: #35c88a1f;
+  --color-warning: #e8a33d;
+  --color-warning-soft: #e8a33d1f;
+  --color-danger: #ef5f68;
+  --color-danger-soft: #ef5f681f;
+
+  /* ── The document itself ───────────────────────────────────────────────── */
+  /* Paper is the one genuinely light surface in the product. It is a token so
+     the preview pane, the Markdown view and any future export agree on what
+     "the page" looks like. */
+  --color-paper: #ffffff;
+  --color-paper-ink: #16161d;
+  --color-paper-muted: #5b5b6b;
+
+  /* ── Chunk roles, for the preview overlay ──────────────────────────────── */
+  --color-chunk-heading: #6e56cf;
+  --color-chunk-paragraph: #4a90d9;
+  --color-chunk-table: #35c88a;
+  --color-chunk-figure: #e8a33d;
+  --color-chunk-list: #b07de0;
+  --color-chunk-caption: #6a6a7a;
+  --color-chunk-furniture: #3a3a48;
+
+  /* ── Type ──────────────────────────────────────────────────────────────── */
+  /* System stacks. A document tool should open instantly and never reflow
+     because a webfont arrived late — and self-hosting a font for a first
+     milestone would be a build-time network dependency for no visual gain. */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mono:
+    ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', 'Cascadia Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  /* ── Radii ─────────────────────────────────────────────────────────────── */
+  --radius-card: 0.75rem;
+  --radius-panel: 1rem;
+
+  /* ── Motion ────────────────────────────────────────────────────────────── */
+  /* One easing curve for the whole product. Interfaces feel considered when
+     everything decelerates the same way; they feel assembled when it does not. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-fade-up: fade-up 0.32s var(--ease-out-soft) both;
+  --animate-fade-in: fade-in 0.24s var(--ease-out-soft) both;
+  --animate-sweep: sweep 1.6s linear infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The indeterminate bar under a processing job. A determinate bar that jumps
+   between stages would read as stalling; this reads as working. */
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(400%);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus is visible everywhere, and it is the accent — not the browser's
+     default ring, which is invisible against a violet-on-black palette. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-bright);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: #fff;
+  }
+
+  /* Scrollbars, so a dark UI does not get a bright grey bar bolted onto it. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-line-strong);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #45454f;
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Component-level primitives
+
+   Only patterns that are genuinely reused and awkward to express as a utility
+   string live here — the grid the landing page is built on, the Markdown
+   typography, and the route-transition shimmer.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+  /* A hairline that fades at both ends — used under section headings and above
+     the footer. A flat 1px border across a 1400px page reads as a hard rule;
+     this reads as a light source. */
+  .rule-fade {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-line) 15%,
+      var(--color-line) 85%,
+      transparent
+    );
+  }
+
+  /* The landing page's ambient background: one violet glow, one cool glow,
+     both far enough off-centre that they read as depth rather than decoration. */
+  .ambient {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background-image:
+      radial-gradient(60rem 32rem at 12% -8%, #6e56cf26, transparent 62%),
+      radial-gradient(48rem 28rem at 92% 4%, #4a90d91a, transparent 60%);
+  }
+
+  /* Faint dot grid. `mask-image` fades it out toward the bottom so the page
+     dissolves into the canvas instead of stopping at a visible edge. */
+  .grid-dots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(var(--color-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(to bottom, black, transparent 70%);
+  }
+
+  /* ── Markdown preview typography ────────────────────────────────────────
+     Applied to generated Markdown, which is arbitrary by nature. It is styled
+     on paper, because that is what it represents: the document, rendered. */
+  .prose-document {
+    color: var(--color-paper-ink);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    max-width: 68ch;
+  }
+
+  .prose-document > * + * {
+    margin-top: 1em;
+  }
+
+  .prose-document h1,
+  .prose-document h2,
+  .prose-document h3,
+  .prose-document h4 {
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.011em;
+    margin-top: 1.9em;
+    margin-bottom: 0.5em;
+  }
+
+  .prose-document h1 {
+    font-size: 1.75rem;
+    margin-top: 0;
+    letter-spacing: -0.021em;
+  }
+  .prose-document h2 {
+    font-size: 1.3125rem;
+  }
+  .prose-document h3 {
+    font-size: 1.0625rem;
+  }
+  .prose-document h4 {
+    font-size: 0.9375rem;
+  }
+
+  .prose-document p,
+  .prose-document li {
+    color: #26262f;
+  }
+
+  .prose-document strong {
+    font-weight: 600;
+    color: var(--color-paper-ink);
+  }
+
+  .prose-document a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .prose-document ul,
+  .prose-document ol {
+    padding-left: 1.35em;
+  }
+
+  .prose-document ul {
+    list-style: disc;
+  }
+  .prose-document ol {
+    list-style: decimal;
+  }
+
+  .prose-document li + li {
+    margin-top: 0.35em;
+  }
+
+  .prose-document li::marker {
+    color: #a5a5b4;
+  }
+
+  .prose-document blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1em;
+    color: var(--color-paper-muted);
+    font-style: italic;
+  }
+
+  .prose-document code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: #6e56cf14;
+    color: #4c3a9e;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+  }
+
+  .prose-document pre {
+    background: #f6f6f8;
+    border: 1px solid #e6e6ec;
+    border-radius: var(--radius-card);
+    padding: 1em 1.15em;
+    overflow-x: auto;
+  }
+
+  .prose-document pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  /* The tables the engine produces are the product's headline feature, so they
+     get the treatment: a real header row, right-aligned numerics (which the
+     generator's `align` array already decided), and tabular figures so the
+     columns line up digit-for-digit. */
+  .prose-document table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin-top: 1.4em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose-document thead {
+    border-bottom: 2px solid var(--color-paper-ink);
+  }
+
+  .prose-document th {
+    text-align: left;
+    font-weight: 600;
+    padding: 0.6em 0.9em;
+    white-space: nowrap;
+  }
+
+  .prose-document td {
+    padding: 0.55em 0.9em;
+    border-bottom: 1px solid #ebebf0;
+  }
+
+  .prose-document tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .prose-document tbody tr:last-child {
+    font-weight: 600;
+    background: #fafafc;
+  }
+
+  .prose-document img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #e6e6ec;
+    border-radius: var(--radius-card);
+    margin-top: 1.2em;
+  }
+
+  .prose-document hr {
+    border: none;
+    border-top: 1px solid #e6e6ec;
+    margin: 2em 0;
+  }
+
+  /* Page markers (`<!-- page: 2 -->`) survive the Markdown round trip as HTML
+     comments, so the viewer turns them into visible page breaks. */
+  .page-marker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 2.25em 0 1.5em;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a5a5b4;
+  }
+
+  .page-marker::before,
+  .page-marker::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: #ebebf0;
+  }
+}
+
+@layer utilities {
+  /* Applied to any container of user- or engine-supplied text so a long
+     unbroken token (a URL, a hash, a base64 blob) wraps instead of forcing the
+     whole page to scroll sideways. */
+  .wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Fades the bottom of a scroll container, so "there is more below" is visible
+     without a heavy scrollbar. */
+  .mask-fade-bottom {
+    mask-image: linear-gradient(to bottom, black calc(100% - 3rem), transparent);
+  }
+}

@@ -19,13 +19,19 @@ from __future__ import annotations
 
 import json
 import urllib.error
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from shade_worker.callbacks import CallbackError
-from shade_worker.fixtures import ASSET_DIR, CHUNK_COUNT, build_chunks, build_figure_svg
+from shade_worker.fixtures import (
+    CHUNK_COUNT,
+    FIGURE_ASSET_NAME,
+    build_chunks,
+    build_figure_svg,
+)
 from shade_worker.models import JOB_STAGES, DocumentChunk, JobEnvelope
 from shade_worker.processors import get_processor
 from shade_worker.processors.base import (
@@ -237,7 +243,11 @@ def test_parse_writes_markdown_json_and_the_figure_asset(
     prefix = storage_root / "artifacts/doc_0001/parse"
     markdown_path = prefix / "document.md"
     json_path = prefix / "document.json"
-    asset_path = prefix / ASSET_DIR / "image-001.svg"
+    # Assets are document-scoped, *not* operation-scoped: a figure belongs to
+    # the document, and the key has to match `storageKeys.asset` in
+    # `@shade/shared` so the API's inline dispatcher and this worker write the
+    # same object and the UNIQUE(storage_key) upsert stays idempotent.
+    asset_path = storage_root / "assets/doc_0001" / FIGURE_ASSET_NAME
     assert markdown_path.is_file() and json_path.is_file() and asset_path.is_file()
 
     artifacts = {report["type"]: report for report in complete_calls()["artifacts"]}
@@ -250,8 +260,18 @@ def test_parse_writes_markdown_json_and_the_figure_asset(
         "sizeBytes": markdown_path.stat().st_size,
     }
     assert artifacts["JSON"]["mimeType"] == "application/json"
-    assert artifacts["ASSET"]["mimeType"] == "image/svg+xml"
-    assert artifacts["ASSET"]["label"] == "image-001.svg"
+    assert artifacts["ASSET"] == {
+        "type": "ASSET",
+        "storageKey": f"assets/doc_0001/{FIGURE_ASSET_NAME}",
+        "mimeType": "image/svg+xml",
+        "sizeBytes": asset_path.stat().st_size,
+        "label": FIGURE_ASSET_NAME,
+    }
+
+    # Non-asset reports omit `label` entirely rather than sending null, matching
+    # the optional field in the shared ArtifactReport type.
+    assert "label" not in artifacts["MARKDOWN"]
+    assert "label" not in artifacts["JSON"]
 
     # The reported byte counts are the real thing, not estimates.
     assert artifacts["ASSET"]["sizeBytes"] == len(build_figure_svg().encode("utf-8"))
@@ -300,7 +320,13 @@ def test_document_json_is_the_parse_result_without_markdown(
 def test_parse_metrics_and_document_summary(
     worker: Worker, queue: RecordingQueue, storage_root: Path, complete_calls: Any
 ) -> None:
-    """Metrics are recorded on the job row; the chunk list is Parse-only."""
+    """Metrics are four counts — and only four.
+
+    The absence of a ``chunks`` field is the assertion that matters here. Chunk
+    text is document content; it belongs in the JSON artifact in object storage,
+    never in a relational row and never on the completion callback. If a future
+    change puts it back on the wire, this test is what fails.
+    """
     queue.pending.append(json.dumps(build_envelope("PARSE")))
     worker.handle_one()
 
@@ -308,11 +334,14 @@ def test_parse_metrics_and_document_summary(
     metrics = completion["metrics"]
     markdown = (storage_root / "artifacts/doc_0001/parse/document.md").read_bytes()
 
-    assert metrics["chunkCount"] == 25
-    assert metrics["assetCount"] == 1
-    assert metrics["tableCount"] == 1
-    assert metrics["markdownBytes"] == len(markdown)
-    assert len(metrics["chunks"]) == 25  # Parse keeps chunks for retrieval search
+    assert metrics == {
+        "chunkCount": 25,
+        "assetCount": 1,
+        "tableCount": 1,
+        "markdownBytes": len(markdown),
+    }
+    assert "chunks" not in metrics
+    assert "chunks" not in completion
 
     assert completion["document"] == {
         "pageCount": 3,
@@ -333,16 +362,26 @@ def test_parse_metrics_and_document_summary(
 
 
 def test_completion_uses_camelcase_keys_on_the_wire(
-    worker: Worker, queue: RecordingQueue, complete_calls: Any
+    worker: Worker, queue: RecordingQueue, storage_root: Path, complete_calls: Any
 ) -> None:
-    """Guard the case convention the API rejects mismatches on."""
+    """Guard the case convention the API rejects mismatches on.
+
+    Two conventions meet at this boundary: payloads crossing HTTP are camelCase,
+    while the chunk and structure trees stay snake_case because the retrieval
+    layer consumes them directly. The completion payload carries only the
+    camelCase half — the snake_case half lives in the JSON artifact — so both
+    are asserted here to pin the split.
+    """
     queue.pending.append(json.dumps(build_envelope("PARSE")))
     worker.handle_one()
 
     metrics = complete_calls()["metrics"]
     assert "chunkCount" in metrics and "chunk_count" not in metrics
     assert "markdownBytes" in metrics and "markdown_bytes" not in metrics
-    chunk = metrics["chunks"][0]
+
+    chunk = json.loads(
+        (storage_root / "artifacts/doc_0001/parse/document.json").read_text("utf-8")
+    )["chunks"][0]
     assert "chunk_id" in chunk and "chunkId" not in chunk
     assert "bounding_box" in chunk and "boundingBox" not in chunk
 
@@ -363,7 +402,12 @@ def test_mock_engine_reports_itself_as_mocked(settings: Any) -> None:
 
 
 def test_fail_marker_reports_a_corrupt_document(
-    worker: Worker, queue: RecordingQueue, storage_root: Path, fail_calls: Any, callback_paths: Any
+    worker: Worker,
+    queue: RecordingQueue,
+    storage_root: Path,
+    fail_calls: Any,
+    callback_paths: Any,
+    progress_calls: Any,
 ) -> None:
     """``__fail__`` in the filename drives the typed failure path end to end."""
     queue.pending.append(
@@ -382,11 +426,13 @@ def test_fail_marker_reports_a_corrupt_document(
     assert not (storage_root / "artifacts/doc_0001/parse").exists()
     assert queue.acked and not queue.dead_lettered
 
-    # Progress stopped at the stage where a real engine would have decoded the file.
-    stages = [
-        payload["stage"] for path, payload in []  # replaced below
+    # Progress stopped at the stage where a real engine would have decoded the
+    # container — early enough that the UI sees the failure mid-pipeline.
+    assert [entry["stage"] for entry in progress_calls()] == [
+        "ACCEPTED",
+        "FETCHING",
+        "PARSING",
     ]
-    assert stages == []
 
 
 def test_fail_marker_reaches_parsing_before_failing(
@@ -427,10 +473,7 @@ def test_slow_marker_holds_each_stage(
     slept: list[float] = []
     monkeypatch.setattr(time, "sleep", slept.append)
 
-    slow_settings = type(settings)(
-        **{**settings.__dict__, "slow_stage_seconds": 0.5}
-    )
-    worker = worker_factory(settings=slow_settings)
+    worker = worker_factory(settings=replace(settings, slow_stage_seconds=0.5))
     queue.pending.append(
         json.dumps(build_envelope("PARSE", filename="report__slow__.pdf"))
     )
@@ -450,8 +493,7 @@ def test_slow_marker_absent_means_no_sleeping(
     slept: list[float] = []
     monkeypatch.setattr(time, "sleep", slept.append)
 
-    slow_settings = type(settings)(**{**settings.__dict__, "slow_stage_seconds": 0.5})
-    worker = worker_factory(settings=slow_settings)
+    worker = worker_factory(settings=replace(settings, slow_stage_seconds=0.5))
     queue.pending.append(json.dumps(build_envelope("PARSE", filename="report.pdf")))
     worker.handle_one()
     assert slept == []
@@ -601,9 +643,7 @@ def test_callbacks_post_to_the_internal_endpoint_with_the_worker_token() -> None
     client.report_progress("job_1", JobProgressRequest(progress=42, stage="TEXT"))
 
     assert opener.call_count == 1
-    assert opener.requests[0].full_url == "http://api.internal/api/internal/jobs/job_1/progress".replace(
-        "api.internal", "api.test"
-    )
+    assert opener.requests[0].full_url == "http://api.test/api/internal/jobs/job_1/progress"
     assert opener.header(0, "X-Worker-Token") == "s3cret"
     assert opener.header(0, "Content-Type") == "application/json"
     assert opener.body(0) == {"progress": 42, "stage": "TEXT"}
@@ -672,14 +712,16 @@ def test_lost_progress_callback_requeues_the_job(
     failing = CallbackClient(
         "http://api.test",
         "t",
+        # Three attempts, all refused: the progress report never lands.
         opener=RecordingOpener([urllib.error.URLError("down")] * 3),
         sleep=lambda _: None,
     )
     worker = worker_factory(callbacks=failing)
-    queue.pending.append(json.dumps(build_envelope("PARSE")))
+    payload = json.dumps(build_envelope("PARSE"))
+    queue.pending.append(payload)
     worker.handle_one()
 
-    assert queue.requeued == [queue.pending[0]] or queue.requeued
+    assert queue.requeued == [payload]
     assert not queue.acked
     assert not queue.dead_lettered
 
@@ -687,23 +729,31 @@ def test_lost_progress_callback_requeues_the_job(
 def test_lost_completion_callback_requeues_the_job(
     worker_factory: Any, queue: RecordingQueue, storage_root: Path
 ) -> None:
-    """The artifacts are written and the work is idempotent, so redelivery is safe."""
+    """The artifacts are written and the work is idempotent, so redelivery is safe.
+
+    Only the completion report is lost — progress still lands, which is the
+    interesting case: everything the job produced is on disk, and the API simply
+    never heard about it. Requeueing is correct because a redelivery rewrites
+    identical bytes and re-reports the same keys.
+    """
     from shade_worker.callbacks import CallbackClient
 
-    calls: list[str] = []
+    attempts: list[str] = []
+    succeed = RecordingOpener()
 
     def opener(request: Any, timeout: float = 0) -> Any:
-        calls.append(request.full_url)
+        attempts.append(request.full_url)
         if request.full_url.endswith("/complete"):
             raise urllib.error.URLError("down")
-        return RecordingOpener()._open_stub()  # pragma: no cover - replaced below
+        return succeed(request, timeout)
 
     client = CallbackClient("http://api.test", "t", opener=opener, sleep=lambda _: None)
     worker = worker_factory(callbacks=client)
     queue.pending.append(json.dumps(build_envelope("PARSE")))
     worker.handle_one()
 
-    assert any(url.endswith("/complete") for url in calls)
+    # All three attempts were made before giving up.
+    assert len([url for url in attempts if url.endswith("/complete")]) == 3
     assert queue.requeued and not queue.acked
     # The artifacts survive: a redelivery overwrites them with identical bytes.
     assert (storage_root / "artifacts/doc_0001/parse/document.md").is_file()
@@ -734,8 +784,13 @@ def test_storage_writer_refuses_unsafe_keys(storage_root: Path, key: str) -> Non
         writer.write(key, b"x", "text/plain")
 
 
-def test_storage_writer_containment_holds_after_resolution(storage_root: Path) -> None:
-    """Even a symlink-shaped key cannot resolve outside the root."""
+def test_storage_writer_creates_intermediate_directories(storage_root: Path) -> None:
+    """A deep key is written atomically, creating its parents, leaving no temp file.
+
+    The atomicity matters because a redelivered job overwrites in place: a
+    half-written `document.md` read by the API's artifact endpoint would be a
+    corrupt result served with a 200.
+    """
     writer = LocalStorageWriter(storage_root)
     written = writer.write_text("artifacts/doc/deep/document.md", "hello", "text/markdown")
     assert written.storage_key == "artifacts/doc/deep/document.md"
@@ -779,7 +834,7 @@ def test_context_progress_is_monotonic_even_if_a_processor_goes_backwards(
     )
     ctx.stage("TEXT")
     ctx.stage("PARSING")  # an out-of-order report must not move the bar back
-    ctx.stage("TEXT")  # nor may a duplicate re-emit
+    ctx.stage("PARSING")  # nor may a consecutive duplicate re-emit
 
     assert [entry[0] for entry in emitted] == ["TEXT", "PARSING"]
     assert [entry[1] for entry in emitted] == [45, 45]
@@ -855,7 +910,12 @@ def test_chunk_model_round_trips_from_the_wire() -> None:
 
 
 def test_envelope_rejects_an_unknown_operation() -> None:
+    """The operation is a closed union: an unknown one fails validation, so the
+    runtime dead-letters the payload instead of guessing at an input shape."""
     from pydantic import ValidationError
 
+    unknown = json.loads(
+        json.dumps(build_envelope("PARSE")).replace('"PARSE"', '"SUMMARISE"')
+    )
     with pytest.raises(ValidationError):
-        JobEnvelope.model_validate(build_envelope("PARSE").replace('"PARSE"', '"SUMMARISE"'))
+        JobEnvelope.model_validate(unknown)

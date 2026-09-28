@@ -110,10 +110,10 @@ export interface JobCompleteRequest {
    * Summary figures recorded on the job row so list views never need to read
    * an artifact just to show a badge.
    *
-   * A worker may also put the full `chunks` array on the wire — the request
-   * schema accepts it — but it is deliberately *not* part of this type, because
-   * `completeJob` drops it. Chunk text belongs to the JSON artifact; persisting
-   * it here would duplicate document content into a relational row.
+   * Note what is absent: there is no `chunks` field. Chunk text is document
+   * content, and document content belongs in the JSON artifact in object
+   * storage — not in a relational row and not on the completion callback. The
+   * counts below are the whole of what the job row needs.
    */
   metrics: {
     chunkCount: number;

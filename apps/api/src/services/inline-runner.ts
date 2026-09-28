@@ -1,8 +1,12 @@
 import {
   artifactNames,
   type ArtifactReport,
+  type DocumentDescriptor,
   type JobCompleteRequest,
+  type JobEnvelope,
   type JobFailRequest,
+  type JobStage,
+  type SchemaField,
 } from '@shade/shared';
 import {
   DOCUMENT_SUMMARY,
@@ -10,11 +14,7 @@ import {
   retrieve,
   runExtract,
   runParse,
-  type DocumentDescriptor,
-  type JobEnvelope,
-  type JobStage,
   type ParseOutput,
-  type SchemaField,
 } from '@shade/shared/mock';
 import { config } from '../config/env.js';
 import { getStorage } from '../storage/index.js';
@@ -95,7 +95,9 @@ export async function runInlineJob(envelope: JobEnvelope): Promise<void> {
   }
 }
 
-function stagesFor(envelope: JobEnvelope) {
+function stagesFor(
+  envelope: JobEnvelope,
+): Array<{ stage: JobStage; progress: number; message: string }> {
   switch (envelope.operation) {
     case 'PARSE':
       return PARSE_STAGES;
@@ -103,6 +105,11 @@ function stagesFor(envelope: JobEnvelope) {
       return EXTRACT_STAGES;
     case 'SPLIT':
       return SPLIT_STAGES;
+    default: {
+      // Exhaustiveness: adding an Operation without stages is a compile error.
+      const never: never = envelope.operation;
+      throw new Error(`No stages defined for operation ${String(never)}`);
+    }
   }
 }
 
@@ -144,6 +151,10 @@ async function buildCompletion(envelope: JobEnvelope): Promise<JobCompleteReques
       return completeExtract(envelope);
     case 'SPLIT':
       return completeSplit(envelope);
+    default: {
+      const never: never = envelope.operation;
+      throw new Error(`No completion handler for operation ${String(never)}`);
+    }
   }
 }
 

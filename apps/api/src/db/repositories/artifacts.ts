@@ -141,6 +141,27 @@ export async function listAssets(documentId: string): Promise<Artifact[]> {
   return result.rows.map(toArtifact);
 }
 
+/**
+ * Finds a single asset by the filename the generated Markdown references.
+ *
+ * The name arrives from a URL path segment, which is exactly the kind of input
+ * that turns into a path traversal when it is concatenated into a storage key.
+ * It never is: the lookup is a parameterised equality against the `label`
+ * column, and the storage key that gets read comes from the matched row. A name
+ * like `../../etc/passwd` simply matches nothing.
+ */
+export async function findAssetByName(documentId: string, name: string): Promise<Artifact | null> {
+  const result = await query<ArtifactRow>(
+    `SELECT * FROM artifacts
+      WHERE document_id = $1 AND type = 'ASSET' AND label = $2
+      ORDER BY created_at DESC
+      LIMIT 1`,
+    [documentId, name],
+  );
+  const row = result.rows[0];
+  return row ? toArtifact(row) : null;
+}
+
 /** Total bytes stored for a document — used by the project stats header. */
 export async function artifactsSizeForDocument(documentId: string): Promise<number> {
   const result = await query<{ total: string | null }>(

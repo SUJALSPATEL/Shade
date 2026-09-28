@@ -7,7 +7,7 @@ import type {
   ParseResult,
 } from '@shade/shared';
 import { PAGE_GEOMETRY } from '@shade/shared/mock';
-import { findArtifact } from '../db/repositories/artifacts.js';
+import { findArtifact, findAssetByName } from '../db/repositories/artifacts.js';
 import { findDocumentRow, type DocumentOwner, type DocumentRow } from '../db/repositories/documents.js';
 import { errors } from '../http/errors.js';
 import { getStorage } from '../storage/index.js';
@@ -197,6 +197,29 @@ export async function getRawUpload(documentId: string, owner: DocumentOwner) {
     return { object, document };
   } catch (error) {
     throw errors.storage('The original upload could not be read from storage.', error);
+  }
+}
+
+/**
+ * Streams an extracted asset — the figures the generated Markdown references.
+ *
+ * Without this the Markdown's image links are dead: the file names a figure and
+ * there is nowhere to fetch it from. Serving assets through the same ownership
+ * check as everything else is what keeps that reference meaningful rather than
+ * a note the reader has to take on trust.
+ */
+export async function getAssetStream(documentId: string, owner: DocumentOwner, name: string) {
+  await requireOwnedDocument(documentId, owner);
+
+  const asset = await findAssetByName(documentId, name);
+  if (!asset) throw errors.notFound('Asset');
+
+  const storage = getStorage();
+  try {
+    const object = await storage.getStream(asset.storageKey);
+    return { object, asset };
+  } catch (error) {
+    throw errors.storage('That asset could not be read from storage.', error);
   }
 }
 

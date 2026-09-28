@@ -1,5 +1,5 @@
 import { newId } from '@shade/shared';
-import type { JobError, JobStage, JobStatus, Operation, ProcessingJob } from '@shade/shared';
+import type { JobError, JobInput, JobStage, JobStatus, Operation, ProcessingJob } from '@shade/shared';
 import { query, type Queryable } from '../client.js';
 
 /**
@@ -48,7 +48,12 @@ export async function createJob(
   input: {
     documentId: string;
     operation: Operation;
-    jobInput: Record<string, unknown>;
+    /**
+     * The validated, operation-specific input. Typed as the wire union rather
+     * than a loose record so a job row cannot be written with an input that
+     * does not match its operation.
+     */
+    jobInput: JobInput;
   },
   db: Queryable = { query },
 ): Promise<ProcessingJob> {

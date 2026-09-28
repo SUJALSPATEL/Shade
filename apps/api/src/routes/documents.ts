@@ -20,6 +20,7 @@ import {
 } from '../services/documents.js';
 import {
   artifactAvailability,
+  getAssetStream,
   getChunks,
   getMarkdown,
   getRawUpload,
@@ -202,6 +203,36 @@ export async function registerDocumentRoutes(
         .header('content-disposition', `inline; filename="${sanitizeFilename(document.filename)}"`)
         .header('x-content-type-options', 'nosniff')
         .header('cache-control', 'private, max-age=300')
+        .send(object.stream);
+    },
+  );
+
+  /**
+   * An extracted asset, streamed for the figures the Markdown references.
+   *
+   * Without this the generated Markdown links to `assets/fig-1.svg` and there is
+   * nothing at the other end. Assets are served through the same ownership check
+   * as the document they belong to, so an asset URL is exactly as private as the
+   * document that produced it.
+   */
+  app.get<{ Params: { documentId: string; name: string } }>(
+    '/api/documents/:documentId/assets/:name',
+    async (request, reply) => {
+      const { object, asset } = await getAssetStream(
+        request.params.documentId,
+        ownerOf(request),
+        request.params.name,
+      );
+
+      return reply
+        .header('content-type', asset.mimeType)
+        .header('content-length', String(object.sizeBytes))
+        .header('x-content-type-options', 'nosniff')
+        .header('cache-control', 'private, max-age=300')
+        // `inline` so a figure renders in place rather than downloading. The
+        // `nosniff` above plus a MIME type that comes from the artifact row —
+        // never from the request — is what keeps that safe.
+        .header('content-disposition', 'inline')
         .send(object.stream);
     },
   );

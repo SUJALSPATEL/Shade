@@ -82,6 +82,47 @@ export const JOB_STAGE_LABELS: Record<JobStage, string> = {
   DONE: 'Done',
 };
 
+/**
+ * The stages each operation actually visits, in order.
+ *
+ * A Split job never extracts tables and never renders Markdown, so a UI that
+ * renders `JOB_STAGES` as a checklist makes every Split look like a Parse that
+ * stalled two thirds of the way through. This is the list a progress view
+ * should draw; the full `JOB_STAGES` is the vocabulary, not the itinerary.
+ *
+ * The Python worker emits exactly these sequences — see the `ctx.stage(...)`
+ * calls in `services/worker/shade_worker/processors/`. If a processor gains a
+ * stage, this map changes in the same commit.
+ */
+export const OPERATION_STAGES: Record<Operation, readonly JobStage[]> = {
+  PARSE: [
+    'ACCEPTED',
+    'FETCHING',
+    'PARSING',
+    'LAYOUT',
+    'TEXT',
+    'TABLES',
+    'IMAGES',
+    'STRUCTURE',
+    'MARKDOWN',
+    'JSON',
+    'PERSISTING',
+    'DONE',
+  ],
+  EXTRACT: [
+    'ACCEPTED',
+    'FETCHING',
+    'PARSING',
+    'LAYOUT',
+    'TEXT',
+    'STRUCTURE',
+    'JSON',
+    'PERSISTING',
+    'DONE',
+  ],
+  SPLIT: ['ACCEPTED', 'FETCHING', 'PARSING', 'TEXT', 'STRUCTURE', 'JSON', 'PERSISTING', 'DONE'],
+};
+
 /* ── Documents ───────────────────────────────────────────────────────────── */
 
 export const DOCUMENT_STATUSES = [
