@@ -1,0 +1,33 @@
+{
+  "name": "shade",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shade — Agentic Document Engineering Platform. Convert complex documents into structured, agent-ready representations.",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev -w @shade/api",
+    "dev:web": "npm run dev -w @shade/web",
+    "dev:worker": "npm run dev -w @shade/worker",
+    "build": "npm run build -w @shade/web",
+    "typecheck": "npm run typecheck -w @shade/shared && npm run typecheck -w @shade/api && npm run typecheck -w @shade/web",
+    "lint": "npm run lint -w @shade/web",
+    "db:migrate": "npm run db:migrate -w @shade/api",
+    "db:seed": "npm run db:seed -w @shade/api",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:reset": "docker compose down -v",
+    "worker:install": "python -m pip install -r services/worker/requirements.txt",
+    "worker:test": "python -m pytest services/worker/tests -q"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,334 @@
+[
+ {
+  "chunk_id": "chunk_001",
+  "text": "Northwind Analytics · Annual Report 2025",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 64,
+   "y": 34,
+   "width": 467,
+   "height": 12
+  },
+  "type": "header",
+  "confidence": 0.97
+ },
+ {
+  "chunk_id": "chunk_002",
+  "text": "Annual Report 2025",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 64,
+   "y": 80,
+   "width": 467,
+   "height": 36
+  },
+  "type": "heading",
+  "confidence": 0.99,
+  "heading_level": 1
+ },
+ {
+  "chunk_id": "chunk_003",
+  "text": "Northwind Analytics is pleased to present its consolidated results for the fiscal year ended 31 December 2025. Revenue grew across every operating region, with the strongest expansion in the Asia-Pacific segment.",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 64,
+   "y": 130,
+   "width": 467,
+   "height": 62
+  },
+  "type": "paragraph",
+  "confidence": 0.96
+ },
+ {
+  "chunk_id": "chunk_004",
+  "text": "Executive Summary",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 64,
+   "y": 212,
+   "width": 467,
+   "height": 26
+  },
+  "type": "heading",
+  "confidence": 0.99,
+  "heading_level": 2
+ },
+ {
+  "chunk_id": "chunk_005",
+  "text": "Total revenue for the year reached USD 482.6 million, an increase of 18.4 percent over the prior year. Growth was driven by the Enterprise Data Platform, which now accounts for 41 percent of consolidated revenue and continues to expand its margin profile as delivery scales.",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 64,
+   "y": 250,
+   "width": 467,
+   "height": 78
+  },
+  "type": "paragraph",
+  "confidence": 0.95
+ },
+ {
+  "chunk_id": "chunk_006",
+  "text": "Operating expenses grew more slowly than revenue, producing an operating margin of 22.1 percent compared with 17.6 percent a year earlier. The Board has recommended a final dividend consistent with the capital allocation policy set out in the 2024 annual report.",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 64,
+   "y": 340,
+   "width": 467,
+   "height": 78
+  },
+  "type": "paragraph",
+  "confidence": 0.94
+ },
+ {
+  "chunk_id": "chunk_007",
+  "text": "Page 1 of 3",
+  "page_number": 1,
+  "bounding_box": {
+   "x": 265,
+   "y": 800,
+   "width": 65,
+   "height": 12
+  },
+  "type": "page_number",
+  "confidence": 0.99
+ },
+ {
+  "chunk_id": "chunk_008",
+  "text": "Northwind Analytics · Annual Report 2025",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 64,
+   "y": 34,
+   "width": 467,
+   "height": 12
+  },
+  "type": "header",
+  "confidence": 0.97
+ },
+ {
+  "chunk_id": "chunk_009",
+  "text": "Financial Results",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 64,
+   "y": 80,
+   "width": 467,
+   "height": 26
+  },
+  "type": "heading",
+  "confidence": 0.99,
+  "heading_level": 2
+ },
+ {
+  "chunk_id": "chunk_010",
+  "text": "The table below sets out consolidated revenue by region together with the year-over-year change for each segment. Figures are presented in United States dollars and have been prepared on a constant-currency basis.",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 64,
+   "y": 118,
+   "width": 467,
+   "height": 62
+  },
+  "type": "paragraph",
+  "confidence": 0.95
+ },
+ {
+  "chunk_id": "chunk_011",
+  "text": "Table 1 — Consolidated revenue by region (USD millions)",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 64,
+   "y": 196,
+   "width": 467,
+   "height": 16
+  },
+  "type": "caption",
+  "confidence": 0.93
+ },
+ {
+  "chunk_id": "chunk_012",
+  "text": "Region | FY2025 Revenue | FY2024 Revenue | YoY Change\nIndia | 148.2 | 112.4 | +31.9%\nUnited States | 176.9 | 154.1 | +14.8%\nEurope | 94.3 | 82.7 | +14.0%\nAsia-Pacific | 63.2 | 58.3 | +8.4%\nTotal | 482.6 | 407.5 | +18.4%",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 64,
+   "y": 220,
+   "width": 467,
+   "height": 158
+  },
+  "type": "table",
+  "confidence": 0.92,
+  "group_id": "grp_tbl_2_4"
+ },
+ {
+  "chunk_id": "chunk_013",
+  "text": "India remained the fastest-growing region for the third consecutive year, reflecting continued enterprise adoption in the financial services and healthcare verticals. The United States remains the largest single market by absolute revenue.",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 64,
+   "y": 396,
+   "width": 467,
+   "height": 62
+  },
+  "type": "paragraph",
+  "confidence": 0.95
+ },
+ {
+  "chunk_id": "chunk_014",
+  "text": "Page 2 of 3",
+  "page_number": 2,
+  "bounding_box": {
+   "x": 265,
+   "y": 800,
+   "width": 65,
+   "height": 12
+  },
+  "type": "page_number",
+  "confidence": 0.99
+ },
+ {
+  "chunk_id": "chunk_015",
+  "text": "Northwind Analytics · Annual Report 2025",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 34,
+   "width": 467,
+   "height": 12
+  },
+  "type": "header",
+  "confidence": 0.97
+ },
+ {
+  "chunk_id": "chunk_016",
+  "text": "Regional Performance",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 80,
+   "width": 467,
+   "height": 26
+  },
+  "type": "heading",
+  "confidence": 0.99,
+  "heading_level": 2
+ },
+ {
+  "chunk_id": "chunk_017",
+  "text": "Revenue distribution shifted modestly toward the Asia-Pacific and India segments during the year, while the relative contribution of Europe declined as expected under the segment realignment completed in the first quarter.",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 118,
+   "width": 467,
+   "height": 62
+  },
+  "type": "paragraph",
+  "confidence": 0.95
+ },
+ {
+  "chunk_id": "chunk_018",
+  "text": "Revenue distribution by region, FY2025",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 196,
+   "width": 467,
+   "height": 176
+  },
+  "type": "figure",
+  "confidence": 0.9
+ },
+ {
+  "chunk_id": "chunk_019",
+  "text": "Figure 1 — Revenue distribution by region, FY2025",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 380,
+   "width": 467,
+   "height": 16
+  },
+  "type": "caption",
+  "confidence": 0.93
+ },
+ {
+  "chunk_id": "chunk_020",
+  "text": "Personnel & Benefits",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 420,
+   "width": 467,
+   "height": 26
+  },
+  "type": "heading",
+  "confidence": 0.98,
+  "heading_level": 2
+ },
+ {
+  "chunk_id": "chunk_021",
+  "text": "Headcount increased to 2,480 employees at year end. The company offers a comprehensive benefits programme, and the remuneration committee reviews notice periods and termination provisions for senior staff annually.",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 458,
+   "width": 467,
+   "height": 62
+  },
+  "type": "paragraph",
+  "confidence": 0.94
+ },
+ {
+  "chunk_id": "chunk_022",
+  "text": "Comprehensive health and dental coverage for employees and dependants\nEmployer pension contribution of up to 9 percent of base salary\nAnnual leave entitlement of 25 days plus public holidays\nHybrid working allowance and home office equipment budget",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 528,
+   "width": 467,
+   "height": 88
+  },
+  "type": "list",
+  "confidence": 0.91
+ },
+ {
+  "chunk_id": "chunk_023",
+  "text": "Outlook",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 640,
+   "width": 467,
+   "height": 26
+  },
+  "type": "heading",
+  "confidence": 0.98,
+  "heading_level": 2
+ },
+ {
+  "chunk_id": "chunk_024",
+  "text": "The Board expects continued revenue growth in the coming year, supported by the Enterprise Data Platform roadmap and further expansion of the partner ecosystem. Macroeconomic conditions remain the principal source of uncertainty.",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 64,
+   "y": 678,
+   "width": 467,
+   "height": 62
+  },
+  "type": "paragraph",
+  "confidence": 0.95
+ },
+ {
+  "chunk_id": "chunk_025",
+  "text": "Page 3 of 3",
+  "page_number": 3,
+  "bounding_box": {
+   "x": 265,
+   "y": 800,
+   "width": 65,
+   "height": 12
+  },
+  "type": "page_number",
+  "confidence": 0.99
+ }
+]

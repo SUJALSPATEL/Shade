@@ -1,0 +1,138 @@
+{
+ "document": {
+  "id": "doc_1",
+  "filename": "report.pdf",
+  "mimeType": "application/pdf",
+  "sizeBytes": 1024,
+  "pageCount": 3,
+  "title": "Annual Report 2025",
+  "author": "Northwind Analytics",
+  "createdAt": "2026-01-01T00:00:00.000Z"
+ },
+ "schema": {
+  "name": "Financial summary",
+  "fields": [
+   {
+    "name": "company_name",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "reporting_period",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "total_revenue",
+    "type": "number",
+    "required": true
+   },
+   {
+    "name": "revenue_growth_pct",
+    "type": "number",
+    "required": false
+   },
+   {
+    "name": "operating_margin_pct",
+    "type": "number",
+    "required": false
+   },
+   {
+    "name": "regions",
+    "type": "array<object>",
+    "required": false
+   },
+   {
+    "name": "nonsense_field",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ "extraction": {
+  "company_name": {
+   "value": "Northwind Analytics",
+   "confidence": 0.97,
+   "pageNumber": 1,
+   "sourceChunkIds": [
+    "chunk_001"
+   ]
+  },
+  "reporting_period": {
+   "value": "FY2025 (year ended 31 December 2025)",
+   "confidence": 0.94,
+   "pageNumber": 1,
+   "sourceChunkIds": [
+    "chunk_002"
+   ]
+  },
+  "total_revenue": {
+   "value": 482.6,
+   "confidence": 0.96,
+   "pageNumber": 2,
+   "sourceChunkIds": [
+    "chunk_011",
+    "chunk_012"
+   ]
+  },
+  "revenue_growth_pct": {
+   "value": 18.4,
+   "confidence": 0.93,
+   "pageNumber": 2,
+   "sourceChunkIds": [
+    "chunk_011"
+   ]
+  },
+  "operating_margin_pct": {
+   "value": 22.1,
+   "confidence": 0.91,
+   "pageNumber": 1,
+   "sourceChunkIds": [
+    "chunk_006"
+   ]
+  },
+  "regions": {
+   "value": [
+    {
+     "region": "India",
+     "revenue": 148.2,
+     "yoy_change": "+31.9%"
+    },
+    {
+     "region": "United States",
+     "revenue": 176.9,
+     "yoy_change": "+14.8%"
+    },
+    {
+     "region": "Europe",
+     "revenue": 94.3,
+     "yoy_change": "+14.0%"
+    },
+    {
+     "region": "Asia-Pacific",
+     "revenue": 63.2,
+     "yoy_change": "+8.4%"
+    }
+   ],
+   "confidence": 0.92,
+   "pageNumber": 2,
+   "sourceChunkIds": [
+    "chunk_012"
+   ]
+  },
+  "nonsense_field": {
+   "value": null,
+   "confidence": 0,
+   "pageNumber": null,
+   "sourceChunkIds": []
+  }
+ },
+ "overallConfidence": 0.7175,
+ "metadata": {
+  "engine": "mock-structural",
+  "version": "0.1.0",
+  "durationMs": 2610,
+  "processedAt": "2025-01-01T00:00:02.610Z",
+  "mocked": true
+ }
+}

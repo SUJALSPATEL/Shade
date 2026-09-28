@@ -1,0 +1,193 @@
+{
+ "Find the section about employee benefits.": [
+  {
+   "chunk_id": "chunk_021",
+   "page_number": 3,
+   "text": "Headcount increased to 2,480 employees at year end. The company offers a comprehensive benefits programme, and the remuneration committee reviews notice periods and termination provisions for senior staff annually.",
+   "score": 0.564,
+   "bounding_box": {
+    "x": 64,
+    "y": 458,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 3 terms (employees, staff, headcount) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_020",
+   "page_number": 3,
+   "text": "Personnel & Benefits",
+   "score": 0.196,
+   "bounding_box": {
+    "x": 64,
+    "y": 420,
+    "width": 467,
+    "height": 26
+   },
+   "type": "heading",
+   "rationale": "Matched 1 term (personnel) in a heading region."
+  },
+  {
+   "chunk_id": "chunk_022",
+   "page_number": 3,
+   "text": "Comprehensive health and dental coverage for employees and dependants\nEmployer pension contribution of up to 9 percent of base salary\nAnnual leave entitlement of 25 days plus public holidays\nHybrid working allowance and home office equipment budget",
+   "score": 0.182,
+   "bounding_box": {
+    "x": 64,
+    "y": 528,
+    "width": 467,
+    "height": 88
+   },
+   "type": "list",
+   "rationale": "Matched 1 term (employees) in a list region."
+  }
+ ],
+ "Find chunks related to termination clauses.": [
+  {
+   "chunk_id": "chunk_021",
+   "page_number": 3,
+   "text": "Headcount increased to 2,480 employees at year end. The company offers a comprehensive benefits programme, and the remuneration committee reviews notice periods and termination provisions for senior staff annually.",
+   "score": 0.752,
+   "bounding_box": {
+    "x": 64,
+    "y": 458,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 3 terms (termination, notice, provisions) in a paragraph region."
+  }
+ ],
+ "What was the revenue growth in India?": [
+  {
+   "chunk_id": "chunk_003",
+   "page_number": 1,
+   "text": "Northwind Analytics is pleased to present its consolidated results for the fiscal year ended 31 December 2025. Revenue grew across every operating region, with the strongest expansion in the Asia-Pacific segment.",
+   "score": 0.512,
+   "bounding_box": {
+    "x": 64,
+    "y": 130,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 3 terms (revenue, expansion, grew) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_005",
+   "page_number": 1,
+   "text": "Total revenue for the year reached USD 482.6 million, an increase of 18.4 percent over the prior year. Growth was driven by the Enterprise Data Platform, which now accounts for 41 percent of consolidated revenue and continues to expand its margin profile as delivery scales.",
+   "score": 0.5067,
+   "bounding_box": {
+    "x": 64,
+    "y": 250,
+    "width": 467,
+    "height": 78
+   },
+   "type": "paragraph",
+   "rationale": "Matched 3 terms (revenue, growth, increase) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_024",
+   "page_number": 3,
+   "text": "The Board expects continued revenue growth in the coming year, supported by the Enterprise Data Platform roadmap and further expansion of the partner ecosystem. Macroeconomic conditions remain the principal source of uncertainty.",
+   "score": 0.5067,
+   "bounding_box": {
+    "x": 64,
+    "y": 678,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 3 terms (revenue, growth, expansion) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_017",
+   "page_number": 3,
+   "text": "Revenue distribution shifted modestly toward the Asia-Pacific and India segments during the year, while the relative contribution of Europe declined as expected under the segment realignment completed in the first quarter.",
+   "score": 0.3378,
+   "bounding_box": {
+    "x": 64,
+    "y": 118,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 2 terms (revenue, india) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_006",
+   "page_number": 1,
+   "text": "Operating expenses grew more slowly than revenue, producing an operating margin of 22.1 percent compared with 17.6 percent a year earlier. The Board has recommended a final dividend consistent with the capital allocation policy set out in the 2024 annual report.",
+   "score": 0.3342,
+   "bounding_box": {
+    "x": 64,
+    "y": 340,
+    "width": 467,
+    "height": 78
+   },
+   "type": "paragraph",
+   "rationale": "Matched 2 terms (revenue, grew) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_012",
+   "page_number": 2,
+   "text": "Region | FY2025 Revenue | FY2024 Revenue | YoY Change\nIndia | 148.2 | 112.4 | +31.9%\nUnited States | 176.9 | 154.1 | +14.8%\nEurope | 94.3 | 82.7 | +14.0%\nAsia-Pacific | 63.2 | 58.3 | +8.4%\nTotal | 482.6 | 407.5 | +18.4%",
+   "score": 0.3271,
+   "bounding_box": {
+    "x": 64,
+    "y": 220,
+    "width": 467,
+    "height": 158
+   },
+   "type": "table",
+   "rationale": "Matched 2 terms (revenue, india) in a table region."
+  },
+  {
+   "chunk_id": "chunk_010",
+   "page_number": 2,
+   "text": "The table below sets out consolidated revenue by region together with the year-over-year change for each segment. Figures are presented in United States dollars and have been prepared on a constant-currency basis.",
+   "score": 0.1689,
+   "bounding_box": {
+    "x": 64,
+    "y": 118,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 1 term (revenue) in a paragraph region."
+  },
+  {
+   "chunk_id": "chunk_013",
+   "page_number": 2,
+   "text": "India remained the fastest-growing region for the third consecutive year, reflecting continued enterprise adoption in the financial services and healthcare verticals. The United States remains the largest single market by absolute revenue.",
+   "score": 0.1689,
+   "bounding_box": {
+    "x": 64,
+    "y": 396,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 1 term (india) in a paragraph region."
+  }
+ ],
+ "Which regions performed best?": [],
+ "What are the principal risks?": [
+  {
+   "chunk_id": "chunk_024",
+   "page_number": 3,
+   "text": "The Board expects continued revenue growth in the coming year, supported by the Enterprise Data Platform roadmap and further expansion of the partner ecosystem. Macroeconomic conditions remain the principal source of uncertainty.",
+   "score": 0.38,
+   "bounding_box": {
+    "x": 64,
+    "y": 678,
+    "width": 467,
+    "height": 62
+   },
+   "type": "paragraph",
+   "rationale": "Matched 1 term (principal) in a paragraph region."
+  }
+ ]
+}

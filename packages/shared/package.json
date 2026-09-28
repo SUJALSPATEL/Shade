@@ -1,0 +1,23 @@
+{
+  "name": "@shade/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shade — shared domain types, API contracts and job protocol. Consumed by the web app, the API and (structurally) the Python worker.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts/index.ts",
+    "./mock": "./src/mock/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
