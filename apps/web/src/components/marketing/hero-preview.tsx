@@ -1,289 +1,415 @@
+'use client';
+
+import { useState } from 'react';
 import { cn } from '@/lib/cn';
 
 /**
- * The landing page's hero visual.
+ * The hero's product shot.
  *
- * A static, hand-built picture of the workspace — not the workspace itself. The
- * real one is behind a click, and embedding it here would mean the marketing
- * page pays for the PDF viewer, the polling loop and the whole result tree.
+ * There is no screenshot here, and there cannot be one: the workspace only
+ * exists behind an upload, and a marketing page has nothing to upload. So this
+ * is a drawing — the parse workspace rebuilt out of DOM elements.
  *
- * It is worth building carefully rather than screenshotting, because it has to
- * make one specific claim in about two seconds: *the boxes on the left and the
- * text on the right are the same thing.* So the overlay colours and the
- * highlighted tokens on the right come from the same `--color-chunk-*` tokens
- * the real preview uses, and the table row that is tinted on the page is the
- * table row that is bolded in the Markdown. A generic "AI reading a document"
- * illustration would communicate none of that.
+ * Drawing it rather than shipping an image is the right trade for three
+ * reasons. It stays crisp on any display without a 2x asset. It re-colours
+ * itself from the design tokens, so it cannot drift out of date when a token
+ * changes. And it stays legible to a screen reader and a crawler, which a PNG
+ * of a user interface is not.
+ *
+ * The regions are laid out as *flow* blocks with an outline rather than as
+ * absolutely-positioned boxes over a picture. That matters: an outline wrapping
+ * the element it describes is always aligned with it, at every viewport width,
+ * with no coordinates to keep in sync. The bounding boxes the engine actually
+ * returns are the real thing — this is the honest cartoon of it.
  */
 
-export function HeroPreview({ className }: { className?: string }) {
+export function HeroPreview() {
+  const [tab, setTab] = useState<'markdown' | 'json'>('markdown');
+
   return (
-    <div
-      className={cn(
-        'overflow-hidden rounded-[var(--radius-panel)] border border-line bg-surface',
-        'shadow-[0_40px_120px_-40px_rgba(110,86,207,0.5),0_8px_32px_-16px_rgba(0,0,0,0.8)]',
-        className,
-      )}
-      // Decorative: the same information is in the copy beneath it, and a screen
-      // reader reading out forty lines of fake Markdown helps nobody.
-      aria-hidden="true"
-    >
-      {/* Window chrome */}
-      <div className="flex items-center gap-3 border-b border-line bg-raised px-4 py-2.5">
-        <div className="flex gap-1.5">
-          <span className="size-2.5 rounded-full bg-[#ef5f68]/70" />
-          <span className="size-2.5 rounded-full bg-warning/70" />
-          <span className="size-2.5 rounded-full bg-positive/70" />
-        </div>
-        <div className="mx-auto flex items-center gap-2 rounded-md border border-line bg-surface px-2.5 py-1">
-          <PageIcon />
-          <span className="font-mono text-[0.6875rem] text-ink-muted">q3-annual-report.pdf</span>
-          <span className="font-mono text-[0.6875rem] text-ink-faint">14 pages</span>
+    <div className="relative">
+      {/* The light the whole thing sits in. Two offset glows, blurred well past
+          the frame so the panel reads as lit rather than as outlined. */}
+      <div
+        className="pointer-events-none absolute -inset-x-10 -top-10 bottom-0 -z-10 opacity-70 blur-3xl"
+        style={{
+          backgroundImage:
+            'radial-gradient(38rem 18rem at 25% 12%, #6e56cf4d, transparent 62%), radial-gradient(34rem 16rem at 78% 30%, #4f9cf033, transparent 64%)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="panel ring-gradient overflow-hidden">
+        <WindowChrome />
+
+        <div className="grid lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <DocumentPane />
+          <OutputPane tab={tab} onTabChange={setTab} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)]">
-        {/* ── The page ───────────────────────────────────────────────────── */}
-        <div className="relative border-line bg-[#f4f4f7] p-5 sm:border-r">
-          <div className="relative mx-auto aspect-[1/1.28] w-full max-w-[19rem] rounded-md bg-paper p-5 shadow-[0_2px_16px_-4px_rgba(0,0,0,0.25)]">
-            {/* Header band */}
-            <Box
-              colour="var(--color-chunk-furniture)"
-              className="left-5 right-5 top-4 h-2"
-              label="header"
-              showLabel={false}
-            />
+      {/* The one floating element. It restates the product's central claim —
+          every region comes back with a type, a page and a confidence — and it
+          is placed over the seam between the two panes, which is where the eye
+          already is. */}
+      <div className="pointer-events-none absolute -bottom-5 left-1/2 hidden -translate-x-1/2 sm:block">
+        <div className="panel flex items-center gap-3 rounded-full px-4 py-2 animate-float">
+          <span className="flex size-1.5 rounded-full bg-positive" aria-hidden="true" />
+          <span className="font-mono text-[0.6875rem] text-ink-muted">
+            <span className="text-ink">chk_004</span>
+            <span className="mx-1.5 text-ink-faint">·</span>
+            table
+            <span className="mx-1.5 text-ink-faint">·</span>
+            page 1
+            <span className="mx-1.5 text-ink-faint">·</span>
+            <span className="text-positive">0.98</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-            {/* Heading */}
-            <Overlay colour="var(--color-chunk-heading)" className="left-5 top-[3.25rem] h-4 w-3/5" />
-            <div className="mt-[3.25rem] h-4 w-3/5 rounded-sm bg-[#16161d]" />
+/* ── Chrome ──────────────────────────────────────────────────────────────── */
 
-            {/* Intro paragraph */}
-            <Overlay colour="var(--color-chunk-paragraph)" className="left-5 top-[5.5rem] h-7 w-full" />
-            <Lines className="mt-[5.5rem]" count={3} widths={['100%', '94%', '62%']} />
+function WindowChrome() {
+  return (
+    <div className="flex items-center gap-3 border-b border-line bg-surface/80 px-4 py-3">
+      <div className="flex gap-1.5" aria-hidden="true">
+        <span className="size-2.5 rounded-full bg-[#ff5f57]/70" />
+        <span className="size-2.5 rounded-full bg-[#febc2e]/70" />
+        <span className="size-2.5 rounded-full bg-[#28c840]/70" />
+      </div>
 
-            {/* The table — the region the Markdown on the right is rendering */}
-            <Overlay colour="var(--color-chunk-table)" className="left-5 right-5 top-[9.5rem] h-[4.75rem]" />
-            <div className="mt-[9.5rem] overflow-hidden rounded-sm border border-[#e2e2ea]">
-              <div className="grid grid-cols-3 gap-2 border-b-2 border-[#16161d] px-2 py-1.5">
-                <Bar width="80%" dark />
-                <Bar width="60%" dark />
-                <Bar width="70%" dark />
-              </div>
-              {[0, 1, 2].map((row) => (
-                <div
-                  key={row}
-                  className={cn(
-                    'grid grid-cols-3 gap-2 px-2 py-1.5',
-                    row < 2 && 'border-b border-[#eeeef3]',
-                    // Last row is the total — the same row the Markdown bolds.
-                    row === 2 && 'bg-[#fafafc]',
-                  )}
-                >
-                  <Bar width="70%" />
-                  <Bar width="52%" />
-                  <Bar width="64%" strong={row === 2} />
-                </div>
-              ))}
+      <div className="mx-auto flex min-w-0 items-center gap-2 rounded-md border border-line bg-canvas px-3 py-1">
+        <FileIcon />
+        <span className="truncate font-mono text-[0.6875rem] text-ink-muted">
+          q3-annual-report.pdf
+        </span>
+      </div>
+
+      <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-positive/30 bg-positive-soft px-2 py-0.5 font-mono text-[0.625rem] text-positive sm:flex">
+        <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
+        READY
+      </span>
+    </div>
+  );
+}
+
+/* ── Left: the document, with its detected regions ───────────────────────── */
+
+function DocumentPane() {
+  return (
+    <div className="relative border-line bg-[#0a0a10] p-5 sm:p-6 lg:border-r">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-faint">
+          Source · page 1 of 14
+        </span>
+        <span className="font-mono text-[0.625rem] text-ink-faint">5 regions</span>
+      </div>
+
+      {/* The paper. The one light surface in the product, and the only place on
+          this page where the palette inverts — which is the point. */}
+      <div className="relative rounded-lg bg-paper p-5 shadow-[0_20px_50px_-24px_#000000f2] sm:p-6">
+        <div className="space-y-4">
+          {/* heading */}
+          <Region label="heading" tone="heading">
+            <p className="font-semibold leading-tight tracking-[-0.02em] text-paper-ink text-[0.9375rem] sm:text-base">
+              Q3 Annual Report
+            </p>
+          </Region>
+
+          {/* paragraph */}
+          <Region label="paragraph" tone="paragraph">
+            <div className="space-y-1.5" aria-hidden="true">
+              <Bar w="100%" />
+              <Bar w="94%" />
+              <Bar w="62%" />
             </div>
+          </Region>
 
-            {/* The figure */}
-            <Overlay colour="var(--color-chunk-figure)" className="left-5 right-5 top-[15.75rem] h-[3.5rem]" />
-            <div className="mt-[15.75rem] flex h-[3.5rem] items-end gap-1.5 rounded-sm bg-[#fafafc] px-2.5 pb-2 pt-2">
-              {[38, 62, 47, 84, 56, 71].map((height, index) => (
+          {/* figure */}
+          <Region label="figure" tone="figure">
+            <div className="flex h-16 items-end gap-2 sm:h-20" aria-hidden="true">
+              {[38, 56, 44, 78, 62, 92].map((height, index) => (
                 <div
                   key={index}
-                  className="flex-1 rounded-t-[2px] bg-accent"
-                  style={{ height: `${height}%`, opacity: 0.35 + index * 0.11 }}
+                  className="flex-1 rounded-t-[3px]"
+                  style={{
+                    height: `${height}%`,
+                    background: `linear-gradient(180deg, #8b78e8, #6e56cf)`,
+                    opacity: 0.35 + (index / 5) * 0.65,
+                  }}
                 />
               ))}
             </div>
+          </Region>
 
-            {/* Caption */}
-            <Overlay colour="var(--color-chunk-caption)" className="left-5 right-5 top-[20rem] h-3" />
-            <Lines className="mt-[20rem]" count={1} widths={['58%']} />
-          </div>
+          {/* table */}
+          <Region label="table" tone="table">
+            <table className="w-full border-collapse font-mono text-[0.625rem] tabular-nums text-paper-ink">
+              <thead>
+                <tr className="border-b border-[#16161d]/25">
+                  <th className="py-1 pr-2 text-left font-semibold">Quarter</th>
+                  <th className="py-1 pr-2 text-right font-semibold">Revenue</th>
+                  <th className="py-1 text-right font-semibold">Growth</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Q1', '12.4M', '8.1%'],
+                  ['Q2', '14.9M', '20.2%'],
+                  ['Q3', '18.2M', '22.1%'],
+                ].map((row) => (
+                  <tr key={row[0]} className="border-b border-[#16161d]/10 last:border-0">
+                    <td className="py-1 pr-2">{row[0]}</td>
+                    <td className="py-1 pr-2 text-right">{row[1]}</td>
+                    <td className="py-1 text-right text-[#1f7a52]">{row[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Region>
 
-          {/* Legend, floating over the page's lower-left corner */}
-          <div className="absolute bottom-4 left-4 rounded-lg border border-line bg-surface/95 px-2.5 py-2 backdrop-blur-sm">
-            <p className="font-mono text-[0.5625rem] uppercase tracking-[0.1em] text-ink-faint">
-              Regions
-            </p>
-            <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1">
-              {[
-                ['heading', 'var(--color-chunk-heading)'],
-                ['paragraph', 'var(--color-chunk-paragraph)'],
-                ['table', 'var(--color-chunk-table)'],
-                ['figure', 'var(--color-chunk-figure)'],
-              ].map(([label, colour]) => (
-                <span key={label} className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-[2px]" style={{ background: colour }} />
-                  <span className="font-mono text-[0.5625rem] text-ink-muted">{label}</span>
-                </span>
-              ))}
+          {/* paragraph, undetected-looking on purpose: the tail of a page is
+              where a layout model is most likely to be unsure, and showing one
+              region at lower confidence is more honest than five at 0.99. */}
+          <Region label="caption" tone="caption">
+            <div className="space-y-1.5" aria-hidden="true">
+              <Bar w="88%" />
+              <Bar w="46%" />
             </div>
-          </div>
-        </div>
-
-        {/* ── The output ─────────────────────────────────────────────────── */}
-        <div className="flex min-w-0 flex-col bg-canvas">
-          <div className="flex items-center gap-1 border-b border-line px-3 py-2">
-            <PaneTab active>Markdown</PaneTab>
-            <PaneTab>JSON</PaneTab>
-            <span className="ml-auto font-mono text-[0.5625rem] text-ink-faint">9.4 KB</span>
-          </div>
-
-          <div className="flex-1 overflow-hidden p-4 font-mono text-[0.6875rem] leading-[1.75]">
-            <Code colour="var(--color-chunk-heading)">{'# Q3 Annual Report'}</Code>
-            <Code colour="var(--color-chunk-furniture)">{'<!-- page: 1 -->'}</Code>
-            <Code>{''}</Code>
-            <Code>
-              <span className="text-ink-muted">Shade is a platform for </span>
-              <span className="text-ink">agent-ready documents</span>
-              <span className="text-ink-muted">.</span>
-            </Code>
-            <Code>{''}</Code>
-            <Code colour="var(--color-chunk-heading)">{'## Financial summary'}</Code>
-            <Code>{''}</Code>
-            <Code colour="var(--color-chunk-table)">{'| Quarter | Revenue | Growth |'}</Code>
-            <Code colour="var(--color-chunk-table)">{'| :------ | ------: | -----: |'}</Code>
-            <Code colour="var(--color-chunk-table)">{'| Q1      |  12.4 M |   8.1% |'}</Code>
-            <Code colour="var(--color-chunk-table)">{'| Q2      |  14.9 M |  20.2% |'}</Code>
-            <Code colour="var(--color-chunk-table)">
-              <span className="font-semibold text-ink">{'| Total   |  27.3 M |  14.1% |'}</span>
-            </Code>
-            <Code>{''}</Code>
-            <Code colour="var(--color-chunk-figure)">{'![Revenue by quarter](assets/fig-1.svg)'}</Code>
-            <Code colour="var(--color-chunk-caption)">{'*Figure 1 — Revenue by quarter.*'}</Code>
-            <Code>{''}</Code>
-            <Code>
-              <span className="text-ink-faint">{'<!-- 14 pages · 212 regions · 9 tables -->'}</span>
-            </Code>
-
-            <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">
-              <span className="rounded-md border border-line bg-raised px-2 py-1 text-[0.5625rem] text-ink-muted">
-                Copy
-              </span>
-              <span className="rounded-md border border-line bg-raised px-2 py-1 text-[0.5625rem] text-ink-muted">
-                Download .md
-              </span>
-            </div>
-          </div>
+          </Region>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Pieces ──────────────────────────────────────────────────────────────── */
-
-function Overlay({
-  colour,
-  className,
-}: {
-  colour: string;
-  className?: string;
-}) {
-  return (
-    <span
-      className={cn('absolute rounded-[3px] border', className)}
-      style={{
-        borderColor: `color-mix(in srgb, ${colour} 55%, transparent)`,
-        background: `color-mix(in srgb, ${colour} 13%, transparent)`,
-      }}
-    />
-  );
-}
-
-function Box({
-  colour,
-  className,
+/** A flow block carrying the overlay the engine would draw around it. */
+function Region({
   label,
-  showLabel = true,
+  tone,
+  children,
 }: {
-  colour: string;
-  className?: string;
   label: string;
-  showLabel?: boolean;
+  tone: 'heading' | 'paragraph' | 'figure' | 'table' | 'caption';
+  children: React.ReactNode;
 }) {
-  return (
-    <span className={cn('absolute rounded-[3px]', className)} style={{ background: colour }}>
-      {showLabel ? <span className="sr-only">{label}</span> : null}
-    </span>
-  );
-}
+  const colour = `var(--color-chunk-${tone})`;
 
-function Lines({
-  count,
-  widths,
-  className,
-}: {
-  count: number;
-  widths: string[];
-  className?: string;
-}) {
   return (
-    <div className={cn('space-y-[0.3rem]', className)}>
-      {Array.from({ length: count }, (_, index) => (
-        // A caller that passes no widths still gets a plausible paragraph rather
-        // than nothing, so this mock never renders as an empty box.
-        <Bar key={index} width={widths[index % widths.length] ?? '100%'} />
-      ))}
-    </div>
-  );
-}
-
-function Bar({
-  width,
-  dark = false,
-  strong = false,
-}: {
-  width: string;
-  dark?: boolean;
-  strong?: boolean;
-}) {
-  return (
-    <span
-      className={cn('block h-[0.3rem] rounded-full', strong && 'h-[0.34rem]')}
+    <div
+      className="relative rounded-[4px] px-2 pb-2 pt-3"
       style={{
-        width,
-        background: dark ? '#16161d' : strong ? '#3a3a48' : '#c9c9d4',
+        outline: `1px dashed color-mix(in srgb, ${colour} 55%, transparent)`,
+        outlineOffset: '2px',
+        background: `color-mix(in srgb, ${colour} 5%, transparent)`,
       }}
-    />
-  );
-}
-
-function PaneTab({ active = false, children }: { active?: boolean; children: React.ReactNode }) {
-  return (
-    <span
-      className={cn(
-        'rounded-md px-2 py-1 text-[0.625rem] font-medium',
-        active ? 'bg-raised text-ink' : 'text-ink-faint',
-      )}
     >
-      {children}
-    </span>
-  );
-}
-
-function Code({ colour, children }: { colour?: string; children: React.ReactNode }) {
-  return (
-    <div className="truncate" style={colour ? { color: colour } : undefined}>
+      <span
+        className="absolute -top-[0.6rem] left-1.5 rounded-[3px] px-1 py-px font-mono text-[0.5625rem] uppercase leading-tight tracking-[0.06em]"
+        style={{
+          color: colour,
+          background: '#0a0a10',
+        }}
+      >
+        {label}
+      </span>
       {children}
     </div>
   );
 }
 
-function PageIcon() {
+function Bar({ w }: { w: string }) {
+  return <div className="h-1.5 rounded-full bg-[#dcdce4]" style={{ width: w }} />;
+}
+
+/* ── Right: the output ───────────────────────────────────────────────────── */
+
+function OutputPane({
+  tab,
+  onTabChange,
+}: {
+  tab: 'markdown' | 'json';
+  onTabChange: (tab: 'markdown' | 'json') => void;
+}) {
   return (
-    <svg className="size-3 text-ink-faint" viewBox="0 0 16 16" fill="none">
+    <div className="flex min-w-0 flex-col bg-[#0b0b12]">
+      <div className="flex items-center gap-1 border-b border-line px-3 py-2">
+        {(['markdown', 'json'] as const).map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => onTabChange(value)}
+            aria-pressed={tab === value}
+            className={cn(
+              'rounded-md px-2.5 py-1 font-mono text-[0.6875rem] uppercase tracking-[0.08em] transition-colors',
+              tab === value
+                ? 'bg-raised text-ink'
+                : 'text-ink-faint hover:bg-raised/60 hover:text-ink-muted',
+            )}
+          >
+            {value}
+          </button>
+        ))}
+
+        <span className="ml-auto hidden font-mono text-[0.625rem] text-ink-faint sm:block">
+          {tab === 'markdown' ? '1,284 chars' : '3.1 KB'}
+        </span>
+      </div>
+
+      <div className="min-h-[19rem] flex-1 overflow-hidden p-4 sm:min-h-[22rem] sm:p-5">
+        {tab === 'markdown' ? <MarkdownSample /> : <JsonSample />}
+      </div>
+    </div>
+  );
+}
+
+function MarkdownSample() {
+  return (
+    <pre className="overflow-x-auto font-mono text-[0.6875rem] leading-[1.85] text-ink-muted">
+      <code>
+        <Line n={1}>
+          <Tok tone="h"># Q3 Annual Report</Tok>
+        </Line>
+        <Line n={2}> </Line>
+        <Line n={3}>
+          Shade turns a source PDF into a representation an agent can act on
+          <br />
+          without guessing at the layout.
+        </Line>
+        <Line n={4}> </Line>
+        <Line n={5}>
+          <Tok tone="h">## Financial summary</Tok>
+        </Line>
+        <Line n={6}> </Line>
+        <Line n={7}>
+          <Tok tone="dim">| Quarter | Revenue | Growth |</Tok>
+        </Line>
+        <Line n={8}>
+          <Tok tone="dim">| ------- | ------: | -----: |</Tok>
+        </Line>
+        <Line n={9}>
+          <Tok tone="dim">| Q1      |   12.4M |   8.1% |</Tok>
+        </Line>
+        <Line n={10}>
+          <Tok tone="dim">| Q2      |   14.9M |  20.2% |</Tok>
+        </Line>
+        <Line n={11}>
+          <Tok tone="dim">| Q3      |   18.2M |  22.1% |</Tok>
+        </Line>
+        <Line n={12}> </Line>
+        <Line n={13}>
+          <Tok tone="link">![Figure 1](/assets/fig-01.png)</Tok>
+        </Line>
+        <Line n={14}> </Line>
+        <Line n={15}>
+          <Tok tone="marker">{'<!-- page: 2 -->'}</Tok>
+        </Line>
+      </code>
+    </pre>
+  );
+}
+
+function JsonSample() {
+  return (
+    <pre className="overflow-x-auto font-mono text-[0.6875rem] leading-[1.85] text-ink-muted">
+      <code>
+        <Line n={1}>{'{'}</Line>
+        <Line n={2}>
+          {'  '}
+          <Tok tone="key">&quot;document&quot;</Tok>: {'{'}
+        </Line>
+        <Line n={3}>
+          {'    '}
+          <Tok tone="key">&quot;filename&quot;</Tok>: <Tok tone="str">&quot;q3-annual-report.pdf&quot;</Tok>,
+        </Line>
+        <Line n={4}>
+          {'    '}
+          <Tok tone="key">&quot;pageCount&quot;</Tok>: <Tok tone="num">14</Tok>
+        </Line>
+        <Line n={5}>{'  },'}</Line>
+        <Line n={6}>
+          {'  '}
+          <Tok tone="key">&quot;chunks&quot;</Tok>: [
+        </Line>
+        <Line n={7}>{'    {'}</Line>
+        <Line n={8}>
+          {'      '}
+          <Tok tone="key">&quot;chunk_id&quot;</Tok>: <Tok tone="str">&quot;chk_004&quot;</Tok>,
+        </Line>
+        <Line n={9}>
+          {'      '}
+          <Tok tone="key">&quot;type&quot;</Tok>: <Tok tone="str">&quot;table&quot;</Tok>,
+        </Line>
+        <Line n={10}>
+          {'      '}
+          <Tok tone="key">&quot;page_number&quot;</Tok>: <Tok tone="num">1</Tok>,
+        </Line>
+        <Line n={11}>
+          {'      '}
+          <Tok tone="key">&quot;bounding_box&quot;</Tok>: {'{'}
+        </Line>
+        <Line n={12}>
+          {'        '}
+          <Tok tone="key">&quot;x&quot;</Tok>: <Tok tone="num">72.0</Tok>, <Tok tone="key">&quot;y&quot;</Tok>:{' '}
+          <Tok tone="num">268.5</Tok>,
+        </Line>
+        <Line n={13}>
+          {'        '}
+          <Tok tone="key">&quot;width&quot;</Tok>: <Tok tone="num">451.0</Tok>, <Tok tone="key">&quot;height&quot;</Tok>:{' '}
+          <Tok tone="num">96.0</Tok>
+        </Line>
+        <Line n={14}>{'      },'}</Line>
+        <Line n={15}>
+          {'      '}
+          <Tok tone="key">&quot;confidence&quot;</Tok>: <Tok tone="num">0.98</Tok>
+        </Line>
+        <Line n={16}>{'    }'}</Line>
+        <Line n={17}>{'  ]'}</Line>
+        <Line n={18}>{'}'}</Line>
+      </code>
+    </pre>
+  );
+}
+
+/** A gutter line number plus its content, so the sample reads as a file. */
+function Line({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-3">
+      <span className="w-4 shrink-0 select-none text-right text-ink-faint/50 tabular-nums">
+        {n}
+      </span>
+      <span className="min-w-0 whitespace-pre-wrap">{children}</span>
+    </div>
+  );
+}
+
+const TOKENS = {
+  h: 'text-accent-bright font-semibold',
+  key: 'text-[#7fc4f5]',
+  str: 'text-positive',
+  num: 'text-warning',
+  link: 'text-[#7fc4f5]',
+  dim: 'text-ink-muted',
+  marker: 'text-ink-faint italic',
+} as const;
+
+function Tok({ tone, children }: { tone: keyof typeof TOKENS; children: React.ReactNode }) {
+  return <span className={TOKENS[tone]}>{children}</span>;
+}
+
+function FileIcon() {
+  return (
+    <svg className="size-3 shrink-0 text-danger" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path
-        d="M4 2h5l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"
+        d="M9 1.5H5a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 5 14.5h6a1.5 1.5 0 0 0 1.5-1.5V5L9 1.5Z"
         stroke="currentColor"
         strokeWidth="1.2"
         strokeLinejoin="round"
       />
-      <path d="M9 2v3h3" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+      <path d="M9 1.5V5h3.5" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
     </svg>
   );
 }

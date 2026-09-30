@@ -42,25 +42,35 @@ export function LogoMark({
       <defs>
         <linearGradient id="shade-page" x1="6" y1="4" x2="20" y2="24" gradientUnits="userSpaceOnUse">
           <stop stopColor="#ffffff" />
-          <stop offset="1" stopColor="#d9d9e6" />
+          <stop offset="1" stopColor="#dcdce8" />
         </linearGradient>
         <linearGradient id="shade-cast" x1="12" y1="10" x2="26" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#8b78e8" />
+          <stop stopColor="#9d8bf5" />
           <stop offset="1" stopColor="#4c3a9e" />
         </linearGradient>
       </defs>
 
       {/* The cast shape. Drawn first so the page overlaps it. */}
-      <rect x="11" y="9" width="16" height="19" rx="3.5" fill="url(#shade-cast)" opacity={glow ? 1 : 0.85} />
+      <rect
+        x="11"
+        y="9"
+        width="16"
+        height="19"
+        rx="3.5"
+        fill="url(#shade-cast)"
+        opacity={glow ? 1 : 0.9}
+      />
 
       {/* The page. */}
       <rect x="5" y="4" width="16" height="19" rx="3.5" fill="url(#shade-page)" />
 
       {/* Three lines of text on the page — enough to read as a document, few
-          enough to survive being rendered at 16px in a browser tab. */}
+          enough to survive being rendered at 16px in a browser tab. The first
+          is the accent because the first thing the engine finds in a document
+          is its heading. */}
       <rect x="8" y="9" width="10" height="1.6" rx="0.8" fill="#6e56cf" />
-      <rect x="8" y="13" width="8" height="1.6" rx="0.8" fill="#b9b9c8" />
-      <rect x="8" y="17" width="9.5" height="1.6" rx="0.8" fill="#b9b9c8" />
+      <rect x="8" y="13" width="8" height="1.6" rx="0.8" fill="#bcbccb" />
+      <rect x="8" y="17" width="9.5" height="1.6" rx="0.8" fill="#bcbccb" />
     </svg>
   );
 }
@@ -91,7 +101,7 @@ export function Wordmark({
       <span className={cn('flex min-w-0 flex-col', block ? 'gap-0.5' : 'gap-0')}>
         <span
           className={cn(
-            'font-semibold leading-none tracking-[-0.02em] text-ink',
+            'font-semibold leading-none tracking-[-0.025em] text-ink',
             size === 'lg' ? 'text-lg' : size === 'md' ? 'text-[0.9375rem]' : 'text-sm',
           )}
         >

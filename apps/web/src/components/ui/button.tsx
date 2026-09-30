@@ -10,16 +10,28 @@ import { cn } from '@/lib/cn';
  * point of a design system is that the same intent looks the same everywhere.
  * `className` is still accepted for layout — margins and widths — so a button
  * can be placed without being re-skinned.
+ *
+ * The primary button is a gradient rather than a flat fill. Against a near-black
+ * canvas a solid violet reads as a swatch; the same violet with a vertical
+ * gradient and a one-pixel inner highlight along its top edge reads as a
+ * physical key, which is what makes it look pressable before anyone hovers it.
  */
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'link';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'link';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent text-white shadow-[0_1px_0_0_rgba(255,255,255,0.12)_inset,0_8px_20px_-8px_var(--color-accent-deep)] hover:bg-accent-bright active:bg-accent-deep',
+    'text-white bg-[linear-gradient(180deg,#8168e0,#6e56cf)] border border-[#8b78e8]/40 ' +
+    'shadow-[0_1px_0_0_#ffffff2e_inset,0_10px_24px_-10px_#6e56cfcc] ' +
+    'hover:bg-[linear-gradient(180deg,#8f78ea,#7860d8)] hover:shadow-[0_1px_0_0_#ffffff38_inset,0_14px_32px_-10px_#6e56cfe6] ' +
+    'active:bg-[linear-gradient(180deg,#6e56cf,#5d47b8)]',
   secondary:
-    'bg-raised text-ink border border-line-strong hover:bg-overlay hover:border-[#3d3d4c] active:bg-raised',
+    'bg-raised text-ink border border-line-strong ' +
+    'shadow-[0_1px_0_0_#ffffff0f_inset] ' +
+    'hover:bg-overlay hover:border-[#3f3f50] active:bg-raised',
+  outline:
+    'bg-transparent text-ink border border-line-strong hover:bg-raised hover:border-[#3f3f50]',
   ghost: 'text-ink-muted hover:text-ink hover:bg-raised active:bg-overlay',
   danger:
     'bg-danger-soft text-danger border border-[#ef5f6840] hover:bg-[#ef5f6826] hover:border-[#ef5f6866]',
@@ -70,7 +82,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       aria-busy={loading || undefined}
       className={cn(
         'inline-flex select-none items-center justify-center whitespace-nowrap font-medium',
-        'transition-colors duration-150 ease-[var(--ease-out-soft)]',
+        'transition-all duration-150 ease-[var(--ease-out-soft)]',
         'disabled:pointer-events-none disabled:opacity-45',
         VARIANTS[variant],
         SIZES[size],
