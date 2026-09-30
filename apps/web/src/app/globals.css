@@ -3,22 +3,36 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Shade — design tokens
 
-   Dark-first, and deliberately so. The product's subject is a *document*: a
-   white, light object. Everything that reads, measures and restructures it is
-   machinery, and machinery reads better as the dark around the light. That is
-   also where the name comes from — Shade is what sits behind the page.
+   Light, warm, and green. The product's subject is a *document* — paper — so the
+   interface is built out of the materials a document lives among: an off-white
+   desk with a faint green cast, bright white sheets laid on it, and ink. The
+   palette is green in the way a reading lamp over a desk is green: the surface
+   is nearly neutral, and the colour arrives through light and shadow rather than
+   through saturated fills.
 
-   The accent is `#6e56cf`. It is not an arbitrary pick: it is the exact fill
-   the mock engine uses for the bars in the figure it extracts
+   Three greens, each with one job:
+
+     leaf  (#4d7c22)  the working accent — links, eyebrows, focus, active state
+     lime  (#c3d93f)  the highlight — washes, glow, the one place colour shouts
+     forest(#274708)  the weight — primary buttons, the dark code surface
+
+   The accent is not an arbitrary pick: it is the same family the mock engine
+   uses for the bars in the figure it extracts
    (`packages/shared/src/mock/fixture-document.ts`). The brand colour and the
    product's own output are the same colour, which is why the accent reads as
    native rather than applied.
 
    The palette is built in *layers* rather than as a flat list of colours. A
-   marketing page needs depth — glow, gradient, elevation — and depth comes from
-   several near-black surfaces stacked at slightly different heights, not from
-   one background plus shadows. `canvas` → `surface` → `raised` → `overlay` is
-   that ladder, and every panel in the product sits on one rung of it.
+   marketing page needs depth — tint, gradient, elevation — and on light that
+   depth comes from several near-white surfaces stacked at slightly different
+   heights plus soft contact shadows, not from glow. `canvas` → `surface` →
+   `raised` → `overlay` is that ladder, and every panel sits on one rung of it.
+
+   One deliberate exception: `code`. A JSON payload or a terminal panel is the
+   one place the product shows raw machine output, and rendering it on white
+   would make the most technical artifact on the page look like the least
+   considered one. It gets a dark green-black surface, and it is the only dark
+   thing in the product.
 
    Tokens are declared in `@theme` so Tailwind generates real utilities from
    them — `bg-surface`, `text-ink-muted`, `border-line`, `bg-accent-soft` — and
@@ -27,59 +41,89 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 @theme {
-  /* ── Surfaces, darkest to lightest ─────────────────────────────────────── */
-  --color-canvas: #07070c; /* the page */
-  --color-surface: #0d0d14; /* cards, panels */
-  --color-raised: #14141d; /* inputs, hovered rows */
-  --color-overlay: #1b1b26; /* popovers, menus */
-  --color-line: #20202b; /* the only border colour */
-  --color-line-strong: #31313f; /* focus rings, dividers that must read */
+  /* ── Surfaces, coolest to brightest ────────────────────────────────────── */
+  --color-canvas: #f5f7ec; /* the page — off-white, green cast, a little lemon */
+  --color-surface: #ffffff; /* cards, panels — the sheet */
+  --color-raised: #eef2e0; /* inputs, hovered rows, wells */
+  --color-overlay: #ffffff; /* popovers, menus */
+  --color-line: #e3e8d3; /* the only border colour */
+  --color-line-strong: #c6d1a8; /* focus rings, dividers that must read */
 
   /* ── Text ──────────────────────────────────────────────────────────────── */
-  --color-ink: #f0f0f6; /* primary */
-  --color-ink-muted: #9b9bb0; /* secondary, labels */
-  --color-ink-faint: #6a6a80; /* timestamps, hints, disabled */
+  --color-ink: #161c11; /* primary — near-black with a green cast */
+  --color-ink-muted: #5a6350; /* secondary, labels */
+  --color-ink-faint: #8a927c; /* timestamps, hints, disabled */
 
-  /* ── Accent — the extracted-figure violet ──────────────────────────────── */
-  --color-accent: #6e56cf;
-  --color-accent-bright: #9d8bf5; /* hover, links, focus */
-  --color-accent-deep: #4c3a9e; /* pressed */
-  --color-accent-soft: #6e56cf1f; /* 12% — tinted chips and panels */
-  --color-accent-line: #6e56cf59; /* 35% — tinted borders */
+  /* ── Accent — leaf green ───────────────────────────────────────────────── */
+  /* `accent-bright` is the one used for text and is therefore the one that has
+     to clear contrast on `canvas`; it is *darker* than `accent`, not lighter,
+     because on a light ground legibility comes from going down in value. Every
+     other accent-bright in a dark theme inverts; this is the token that carries
+     that inversion, so check it here before changing any link colour. */
+  --color-accent: #4d7c22;
+  --color-accent-bright: #3d661a; /* text, links, hover, focus */
+  --color-accent-deep: #274708; /* pressed, and the primary button */
+  --color-accent-soft: #4d7c2214; /* 8% — tinted chips and panels */
+  --color-accent-line: #4d7c2238; /* 22% — tinted borders */
 
-  /* ── Secondary hues ────────────────────────────────────────────────────────
-     Used only in gradients and one or two section accents. A marketing page
-     with a single hue reads as a template; three that sit next to each other in
-     the spectrum read as a palette. They are never used for text on their own,
-     because none of them clears contrast on the canvas. */
-  --color-iris: #7c5cff;
-  --color-azure: #4f9cf0;
-  --color-aqua: #3fc9c0;
+  /* ── Brand highlight ───────────────────────────────────────────────────── */
+  /* Lime. Reserved for the one element per view that should be unmissable —
+     the closing CTA's wash, the marquee's edge, a live indicator. */
+  --color-lime: #c3d93f;
+  --color-lime-soft: #c3d93f2e;
 
   /* ── Status ────────────────────────────────────────────────────────────── */
-  --color-positive: #35c88a;
-  --color-positive-soft: #35c88a1f;
-  --color-warning: #e8a33d;
-  --color-warning-soft: #e8a33d1f;
-  --color-danger: #ef5f68;
-  --color-danger-soft: #ef5f681f;
+  --color-positive: #2f7d4f;
+  --color-positive-soft: #2f7d4f14;
+  --color-warning: #9a6a08;
+  --color-warning-soft: #9a6a0814;
+  --color-danger: #bc3b32;
+  --color-danger-soft: #bc3b3214;
+  /* The one status hue that is not a judgement. Used for schema keys and
+     neutral notices, where green would read as "good" and red as "wrong". */
+  --color-info: #2f6fb5;
+  --color-info-soft: #2f6fb514;
 
   /* ── The document itself ───────────────────────────────────────────────── */
-  /* Paper is the one genuinely light surface in the product. It is a token so
-     the preview pane, the Markdown view and any future export agree on what
-     "the page" looks like. */
+  /* Paper is the sheet the Markdown renders onto. It is a token so the preview
+     pane, the Markdown view and any future export agree on what "the page"
+     looks like — and so that when the product goes dark for a reader who wants
+     it, only these three values move. */
   --color-paper: #ffffff;
   --color-paper-ink: #16161d;
   --color-paper-muted: #5b5b6b;
 
-  /* ── Chunk roles, for the preview overlay ──────────────────────────────── */
-  --color-chunk-heading: #6e56cf;
-  --color-chunk-paragraph: #4a90d9;
-  --color-chunk-table: #35c88a;
-  --color-chunk-figure: #e8a33d;
-  --color-chunk-list: #b07de0;
+  /* ── Machine output ────────────────────────────────────────────────────── */
+  /* The single dark surface. JSON, logs, and the terminal panel in the
+     workspace. Green-black rather than neutral black so it belongs to the same
+     palette as the page it sits on. */
+  --color-code: #171c12;
+  --color-code-raised: #1f2618;
+  --color-code-line: #2b3423;
+  --color-code-ink: #dde4d0;
+  --color-code-muted: #8d977a;
+  --color-code-accent: #b9d96a;
+
+  /* Syntax, for the code surface only. Four hues that hold on `code` and stay
+     distinguishable from each other at 11px — a syntax palette where two tokens
+     are near-neighbours is worse than one colour, because the reader stops
+     trusting the distinction rather than failing to see it. */
+  --color-code-key: #86b8e8;
+  --color-code-string: #a8d96a;
+  --color-code-number: #e0b76a;
+  --color-code-comment: #6f7a5e;
+
+  /* ── Chunk roles, for the preview overlay ──────────────────────────────────
+     Darkened against the dark-theme originals: these draw as 1px outlines and
+     small labels on white paper, and a hue tuned to glow on black disappears
+     when it is moved onto a sheet. */
+  --color-chunk-heading: #6d4bc4;
+  --color-chunk-paragraph: #2f6fb5;
+  --color-chunk-table: #2f7d4f;
+  --color-chunk-figure: #a9700c;
+  --color-chunk-list: #8a4fbf;
   --color-chunk-caption: #6a6a80;
-  --color-chunk-furniture: #3a3a48;
+  --color-chunk-furniture: #a8ad9e;
 
   /* ── Type ──────────────────────────────────────────────────────────────── */
   /* Self-hosted through `next/font`, which downloads the files at build time
@@ -91,6 +135,13 @@
   --font-sans:
     var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  /* The display face. Serif carries the headings because the subject is a
+     document, and because a serif at display size reads as authored rather than
+     assembled. Its italic is a true italic, not a slant, which is what makes the
+     emphasised half of a headline look like emphasis rather than like a
+     different weight of the same thing. */
+  --font-serif:
+    var(--font-source-serif), ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-mono:
     var(--font-jetbrains), ui-monospace, 'SF Mono', SFMono-Regular, 'Cascadia Mono', Menlo,
     Consolas, 'Liberation Mono', monospace;
@@ -222,7 +273,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
   }
@@ -239,28 +290,31 @@
   /* Headlines are set tight and optically balanced. The browser's default
      balance only applies where asked, and it is worth asking on every heading
      that wraps — a two-word second line on a 56px headline is the single most
-     common way a landing page looks unfinished. */
+     common way a landing page looks unfinished.
+
+     No letter-spacing here: display headings get theirs from `.display`, and a
+     blanket negative track on sans-serif UI headings is what makes them look
+     cramped at small sizes. */
   h1,
   h2,
   h3 {
     text-wrap: balance;
-    letter-spacing: -0.022em;
   }
 
   /* Focus is visible everywhere, and it is the accent — not the browser's
-     default ring, which is invisible against a violet-on-black palette. */
+     default ring, which is easy to miss against a pale canvas. */
   :focus-visible {
-    outline: 2px solid var(--color-accent-bright);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
     border-radius: 4px;
   }
 
   ::selection {
-    background-color: var(--color-accent);
-    color: #fff;
+    background-color: var(--color-lime);
+    color: var(--color-accent-deep);
   }
 
-  /* Scrollbars, so a dark UI does not get a bright grey bar bolted onto it. */
+  /* Scrollbars, so a light UI does not get a heavy grey bar bolted onto it. */
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-line-strong) transparent;
@@ -283,7 +337,7 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #45454f;
+    background-color: #b0bd92;
     background-clip: content-box;
   }
 
@@ -307,8 +361,8 @@
    Component-level primitives
 
    Only patterns that are genuinely reused and awkward to express as a utility
-   string live here — the marketing page's surfaces, the Markdown typography,
-   and the route-transition shimmer.
+   string live here — the marketing page's surfaces, the display type, the
+   Markdown typography, and the route-transition shimmer.
    ───────────────────────────────────────────────────────────────────────────── */
 
 @layer components {
@@ -327,7 +381,13 @@
   }
 
   /* ── The hero's background ──────────────────────────────────────────────
-     Three offset glows in the brand's own hues, drifting on a 14s cycle. It is
+     Three offset washes: lime coming in over the top-left, the accent at the
+     right, and a warm lemon pool rising from below. On a light ground these
+     have to be far weaker than a dark theme's glows — colour that would read as
+     atmosphere over black reads as a stain over white — so all three sit at
+     roughly a third of the alpha the dark palette used, and the heaviest is a
+     desaturated lemon rather than a saturated green.
+
      `position: absolute` and `pointer-events: none`, so it can be dropped into
      any relatively-positioned section without affecting layout or hit-testing. */
   .ambient {
@@ -336,9 +396,9 @@
     overflow: hidden;
     pointer-events: none;
     background-image:
-      radial-gradient(58rem 30rem at 14% -10%, #7c5cff2e, transparent 62%),
-      radial-gradient(46rem 26rem at 88% 2%, #4f9cf022, transparent 60%),
-      radial-gradient(40rem 24rem at 50% 118%, #3fc9c01a, transparent 64%);
+      radial-gradient(58rem 30rem at 14% -10%, #c3d93f33, transparent 62%),
+      radial-gradient(46rem 26rem at 88% 2%, #4d7c221f, transparent 60%),
+      radial-gradient(40rem 24rem at 50% 118%, #eef2e0cc, transparent 64%);
   }
 
   /* The same wash, but animated. Separate class so a section can opt into the
@@ -359,31 +419,35 @@
   }
 
   /* A ruled grid, for the hero. Reads as engineering paper rather than as a
-     decorative texture, which is the right register for this product. */
+     decorative texture, which is the right register for this product — and on a
+     light canvas it is genuinely paper, which is the point. */
   .grid-lines {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background-image:
-      linear-gradient(to right, #ffffff08 1px, transparent 1px),
-      linear-gradient(to bottom, #ffffff08 1px, transparent 1px);
+      linear-gradient(to right, #161c110a 1px, transparent 1px),
+      linear-gradient(to bottom, #161c110a 1px, transparent 1px);
     background-size: 64px 64px;
     mask-image: radial-gradient(60rem 34rem at 50% 0%, black, transparent 72%);
   }
 
   /* ── Surfaces ──────────────────────────────────────────────────────────── */
 
-  /* The marketing page's default panel: a rung above the canvas, with a
-     one-pixel highlight along its top edge. That highlight is doing real work —
-     it is what separates two adjacent dark panels from one dark rectangle. */
+  /* The marketing page's default panel: a white sheet on the off-white desk,
+     separated by a hairline and a soft contact shadow. The shadow is doing the
+     work a top-edge highlight does on dark — it is what tells the eye that the
+     sheet is *on* the desk rather than a hole cut in it. Deliberately short and
+     low-alpha: a light interface with heavy drop shadows looks like a slide
+     deck. */
   .panel {
     position: relative;
     border-radius: var(--radius-panel);
     border: 1px solid var(--color-line);
-    background: linear-gradient(180deg, #12121a, var(--color-surface));
+    background: var(--color-surface);
     box-shadow:
-      0 1px 0 0 #ffffff0a inset,
-      0 24px 48px -32px #000000cc;
+      0 1px 2px -1px #161c110f,
+      0 16px 40px -32px #161c1129;
   }
 
   /* Panels that should catch the light when pointed at. */
@@ -398,20 +462,21 @@
     border-color: var(--color-line-strong);
     transform: translateY(-2px);
     box-shadow:
-      0 1px 0 0 #ffffff12 inset,
-      0 32px 64px -32px #000000e6;
+      0 1px 2px -1px #161c1114,
+      0 28px 56px -32px #161c1140;
   }
 
   /* Frosted, for the header and anything that floats over content. */
   .glass {
-    background: color-mix(in srgb, var(--color-canvas) 72%, transparent);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    background: color-mix(in srgb, var(--color-canvas) 76%, transparent);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
   }
 
   /* The 1px gradient hairline that wraps the hero's product shot and the
-     closing CTA. A plain border disappears against a dark gradient; this reads
-     as an edge catching light. */
+     closing CTA. A plain border disappears against a white panel on an
+     off-white page; this reads as an edge catching light, with the lime at the
+     bottom-right corner as the one warm note. */
   .ring-gradient {
     position: relative;
   }
@@ -424,10 +489,10 @@
     padding: 1px;
     background: linear-gradient(
       145deg,
-      #ffffff2e,
-      #6e56cf4d 28%,
-      #ffffff0a 55%,
-      #4f9cf033
+      #ffffff,
+      #4d7c2240 26%,
+      var(--color-line) 56%,
+      #c3d93f66
     );
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
@@ -437,12 +502,35 @@
     pointer-events: none;
   }
 
+  /* A lime hairline along the top edge of a panel — used on the one card per
+     section that is the answer rather than the context. */
+  .panel-accent-top {
+    box-shadow:
+      0 -1px 0 0 var(--color-lime) inset,
+      0 1px 2px -1px #161c110f,
+      0 16px 40px -32px #161c1129;
+  }
+
   /* ── Type treatments ───────────────────────────────────────────────────── */
 
-  /* The gradient headline. Restricted to one line per page — a gradient applied
-     to every heading stops reading as emphasis and starts reading as a theme. */
+  /* The display face, for headings the page wants read as a headline rather
+     than as a label. Serif needs a lighter weight than sans at the same optical
+     size — a 600-weight serif at 56px reads as shouting — and slightly tighter
+     tracking than the browser's default, because serif sidebearings are wider
+     than a grotesque's. */
+  .display {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    line-height: 1.08;
+  }
+
+  /* The gradient headline. Restricted to one element per page — a gradient
+     applied to every heading stops reading as emphasis and starts reading as a
+     theme. Kept as a light-ground variant: deep forest into leaf, so it holds
+     contrast against the canvas while still being visibly a gradient. */
   .text-gradient {
-    background: linear-gradient(100deg, #f5f5ff 6%, #b9a8ff 46%, #7fc4f5 96%);
+    background: linear-gradient(100deg, #274708 0%, #4d7c22 52%, #7fae3a 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -558,8 +646,8 @@
   .prose-document code {
     font-family: var(--font-mono);
     font-size: 0.85em;
-    background: #6e56cf14;
-    color: #4c3a9e;
+    background: #4d7c2214;
+    color: #274708;
     padding: 0.15em 0.4em;
     border-radius: 4px;
   }
@@ -676,6 +764,6 @@
 
   /* A fixed-height section rule that spans the page and fades out. */
   .divide-glow {
-    background: linear-gradient(to bottom, #ffffff0f, transparent);
+    background: linear-gradient(to bottom, #161c110f, transparent);
   }
 }

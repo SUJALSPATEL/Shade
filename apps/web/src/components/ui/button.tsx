@@ -11,10 +11,13 @@ import { cn } from '@/lib/cn';
  * `className` is still accepted for layout — margins and widths — so a button
  * can be placed without being re-skinned.
  *
- * The primary button is a gradient rather than a flat fill. Against a near-black
- * canvas a solid violet reads as a swatch; the same violet with a vertical
- * gradient and a one-pixel inner highlight along its top edge reads as a
- * physical key, which is what makes it look pressable before anyone hovers it.
+ * The primary button is the deepest green in the palette, with a slight vertical
+ * gradient and a one-pixel inner highlight along its top edge. On a light page
+ * the temptation is to make the primary action the *brightest* thing on screen;
+ * that is backwards. Brightness is cheap here — everything around it is already
+ * light — so the button that carries the weight is the one that goes dark. It is
+ * also the single highest-contrast object on the page, which is what a primary
+ * action should be.
  */
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'link';
@@ -22,19 +25,19 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'text-white bg-[linear-gradient(180deg,#8168e0,#6e56cf)] border border-[#8b78e8]/40 ' +
-    'shadow-[0_1px_0_0_#ffffff2e_inset,0_10px_24px_-10px_#6e56cfcc] ' +
-    'hover:bg-[linear-gradient(180deg,#8f78ea,#7860d8)] hover:shadow-[0_1px_0_0_#ffffff38_inset,0_14px_32px_-10px_#6e56cfe6] ' +
-    'active:bg-[linear-gradient(180deg,#6e56cf,#5d47b8)]',
+    'text-white bg-[linear-gradient(180deg,#33590c,#274708)] border border-[#274708] ' +
+    'shadow-[0_1px_0_0_#ffffff26_inset,0_8px_20px_-10px_#27470899] ' +
+    'hover:bg-[linear-gradient(180deg,#3d661a,#2e5210)] hover:shadow-[0_1px_0_0_#ffffff33_inset,0_12px_26px_-10px_#274708b3] ' +
+    'active:bg-[linear-gradient(180deg,#234006,#1d3a05)]',
   secondary:
-    'bg-raised text-ink border border-line-strong ' +
-    'shadow-[0_1px_0_0_#ffffff0f_inset] ' +
-    'hover:bg-overlay hover:border-[#3f3f50] active:bg-raised',
+    'bg-surface text-ink border border-line-strong ' +
+    'shadow-[0_1px_2px_-1px_#161c111a] ' +
+    'hover:bg-raised hover:border-[#b0bd92] active:bg-raised',
   outline:
-    'bg-transparent text-ink border border-line-strong hover:bg-raised hover:border-[#3f3f50]',
+    'bg-transparent text-ink border border-line-strong hover:bg-raised hover:border-[#b0bd92]',
   ghost: 'text-ink-muted hover:text-ink hover:bg-raised active:bg-overlay',
   danger:
-    'bg-danger-soft text-danger border border-[#ef5f6840] hover:bg-[#ef5f6826] hover:border-[#ef5f6866]',
+    'bg-danger-soft text-danger border border-danger/30 hover:bg-danger/15 hover:border-danger/50',
   link: 'text-accent-bright hover:text-ink underline underline-offset-4 decoration-accent-line hover:decoration-accent-bright px-0',
 };
 

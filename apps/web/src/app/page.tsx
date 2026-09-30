@@ -258,10 +258,16 @@ function Hero() {
             </span>
           </div>
 
-          <h1 className="mt-7 text-4xl font-semibold leading-[1.05] tracking-[-0.035em] animate-fade-up sm:text-5xl md:text-[3.5rem]">
+          {/* Two lines in two voices. The first is the plain statement of what
+              you put in; the second is the claim, set in the display serif's
+              true italic so it reads as emphasis rather than as a second
+              sentence. Keeping the headline in ink rather than on a gradient is
+              the point — a gradient is a way of making a headline interesting
+              when it is not, and this one has a contrast to carry it. */}
+          <h1 className="display mt-7 text-[2.5rem] animate-fade-up sm:text-[3.25rem] md:text-[3.75rem]">
             Documents in.
             <br />
-            <span className="text-gradient">Agent-ready structure out.</span>
+            <em className="text-accent">Agent-ready structure out.</em>
           </h1>
 
           <p className="mx-auto mt-6 max-w-xl text-pretty text-[0.9375rem] leading-relaxed text-ink-muted animate-fade-up sm:text-base">
@@ -283,7 +289,7 @@ function Hero() {
             </Link>
           </div>
 
-          <p className="mt-4 text-xs text-ink-faint">
+          <p className="mt-4 text-balance text-xs text-ink-faint">
             No account needed for your first document. PDF up to 50 MB.
           </p>
         </div>
@@ -321,7 +327,11 @@ function Section({
       // 64px header.
       className={cn(
         'scroll-mt-20',
-        tone === 'raised' && 'relative border-y border-line bg-surface/30',
+        // The alternating band. `raised` rather than `surface`: on a light page
+        // the two directions are not equivalent — a band of white over an
+        // off-white canvas reads as a rendering artifact, where a band of the
+        // green-tinted `raised` reads as a deliberate stripe.
+        tone === 'raised' && 'relative border-y border-line bg-raised/50',
       )}
     >
       {tone === 'raised' ? (
@@ -329,7 +339,7 @@ function Section({
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(50rem 22rem at 50% 0%, #6e56cf14, transparent 68%)',
+              'radial-gradient(50rem 22rem at 50% 0%, var(--color-accent-soft), transparent 68%)',
           }}
           aria-hidden="true"
         />
@@ -338,7 +348,7 @@ function Section({
       <div className="relative mx-auto w-full max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
         <header className="max-w-2xl">
           <p className="eyebrow">{eyebrow}</p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.028em] text-ink sm:text-[2rem] sm:leading-[1.15]">
+          <h2 className="display mt-3.5 text-[1.75rem] text-ink sm:text-[2.25rem]">
             {title}
           </h2>
           <p className="mt-4 text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
@@ -360,14 +370,14 @@ function ClosingCta() {
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(38rem 20rem at 50% 0%, #6e56cf40, transparent 70%)',
+              'radial-gradient(38rem 20rem at 50% 0%, var(--color-lime-soft), transparent 70%)',
           }}
           aria-hidden="true"
         />
         <div className="grid-lines opacity-40" aria-hidden="true" />
 
         <div className="relative">
-          <h2 className="text-balance text-2xl font-semibold tracking-[-0.028em] text-ink sm:text-[2rem]">
+          <h2 className="display text-balance text-[1.75rem] text-ink sm:text-[2.25rem]">
             Point it at a document
           </h2>
           <p className="mx-auto mt-3 max-w-md text-pretty text-[0.9375rem] leading-relaxed text-ink-muted">
@@ -448,7 +458,7 @@ function OutputPanel({
         className={
           tone === 'paper'
             ? 'flex-1 bg-paper px-6 py-6 sm:px-8'
-            : 'flex-1 overflow-x-auto bg-[#0a0a10] px-5 py-5 text-ink-muted'
+            : 'flex-1 overflow-x-auto bg-code px-5 py-5 text-code-ink'
         }
       >
         {children}

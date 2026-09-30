@@ -150,28 +150,31 @@ export function SiteHeader({ className }: { className?: string }) {
  * information the page has. It is not dismissible: a dismiss control means
  * state, and the strip is worth exactly one sentence — if it ever needs more
  * than that it should be a section, not a banner.
+ *
+ * It is the one saturated band on the page, and that is deliberate. On a canvas
+ * this pale the eye needs somewhere to land before it reaches the headline, and
+ * a full-width strip of the brand's lime does that in a way a tinted-off-white
+ * bar never will. It is also the honest place for it: the strip is the only
+ * thing above the logo, so making it the loudest costs the navigation nothing.
  */
 function AnnouncementBar() {
   return (
-    <div className="relative border-b border-line/70 bg-surface/60">
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(90deg, transparent, #6e56cf1f 30%, #4f9cf01f 70%, transparent)',
-        }}
-        aria-hidden="true"
-      />
+    <div
+      className="relative border-b border-[#a8c22c]"
+      style={{
+        backgroundImage: 'linear-gradient(90deg, #d7e86a, #c3d93f 46%, #b6d132)',
+      }}
+    >
       <div className="relative mx-auto flex w-full max-w-6xl items-center justify-center gap-2 px-5 py-2 sm:px-8">
         <span
-          className="hidden size-1.5 shrink-0 rounded-full bg-positive sm:block"
+          className="hidden size-1.5 shrink-0 rounded-full bg-accent-deep sm:block"
           aria-hidden="true"
         />
-        <p className="text-center text-[0.75rem] text-ink-muted">
-          <span className="text-ink">Parse, Extract and Split are live.</span>{' '}
+        <p className="text-center text-[0.75rem] text-accent-deep">
+          <span className="font-semibold">Parse, Extract and Split are live.</span>{' '}
           <Link
             href="/parse"
-            className="text-accent-bright underline decoration-accent-line underline-offset-2 transition-colors hover:text-ink hover:decoration-accent-bright"
+            className="underline decoration-accent-deep/40 underline-offset-2 transition-colors hover:decoration-accent-deep"
           >
             Try it on one document
           </Link>{' '}

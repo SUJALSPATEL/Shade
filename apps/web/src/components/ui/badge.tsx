@@ -14,10 +14,10 @@ export type BadgeTone = 'neutral' | 'accent' | 'positive' | 'warning' | 'danger'
 const TONES: Record<BadgeTone, string> = {
   neutral: 'bg-raised text-ink-muted border-line-strong',
   accent: 'bg-accent-soft text-accent-bright border-accent-line',
-  positive: 'bg-positive-soft text-positive border-[#35c88a40]',
-  warning: 'bg-warning-soft text-warning border-[#e8a33d40]',
-  danger: 'bg-danger-soft text-danger border-[#ef5f6840]',
-  info: 'bg-[#4a90d91f] text-[#6fb0ec] border-[#4a90d940]',
+  positive: 'bg-positive-soft text-positive border-positive/30',
+  warning: 'bg-warning-soft text-warning border-warning/30',
+  danger: 'bg-danger-soft text-danger border-danger/30',
+  info: 'bg-info-soft text-info border-info/30',
 };
 
 export function Badge({

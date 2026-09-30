@@ -169,7 +169,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         {formError ? (
           <div
             role="alert"
-            className="rounded-lg border border-[#ef5f6840] bg-danger-soft px-3 py-2.5 text-[0.8125rem] leading-relaxed text-danger"
+            className="rounded-lg border border-danger/30 bg-danger-soft px-3 py-2.5 text-[0.8125rem] leading-relaxed text-danger"
           >
             {formError}
             {formError.toLowerCase().includes('already exists') ? (

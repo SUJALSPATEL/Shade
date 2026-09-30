@@ -76,7 +76,7 @@ export function ProcessingPanel({
       {failure ? (
         <div
           role="alert"
-          className="mt-4 rounded-[var(--radius-card)] border border-[#ef5f6840] bg-danger-soft px-4 py-3.5"
+          className="mt-4 rounded-[var(--radius-card)] border border-danger/30 bg-danger-soft px-4 py-3.5"
         >
           <p className="text-[0.8125rem] font-medium text-danger">{failure.message}</p>
           {failure.stage ? (

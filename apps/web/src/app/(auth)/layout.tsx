@@ -24,7 +24,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Link href="/" className="inline-flex rounded-lg" aria-label="Shade home">
             <span className="flex items-center gap-2.5">
               <LogoMark size={28} />
-              <span className="text-[0.9375rem] font-semibold tracking-[-0.02em] text-ink">
+              <span className="font-serif text-[1.0625rem] font-semibold tracking-[-0.02em] text-ink">
                 Shade
               </span>
             </span>
@@ -34,10 +34,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="relative max-w-md">
           <Backronym />
 
-          <p className="mt-6 text-pretty text-2xl font-semibold leading-snug tracking-[-0.02em] text-ink">
+          {/* Same two-voice construction as the landing headline: a plain line,
+              then the claim in the display serif's italic. The sign-in screen
+              and the landing page are the two places a stranger meets the
+              product's voice, so they had better sound like one product. */}
+          <p className="display mt-6 text-pretty text-[1.75rem] text-ink">
             The document is the input.
             <br />
-            <span className="text-ink-muted">The structure is the product.</span>
+            <em className="text-accent">The structure is the product.</em>
           </p>
 
           <div className="mt-8 space-y-3">

@@ -8,10 +8,11 @@ import { cn } from '@/lib/cn';
  * because "title on the left, one control on the right" is the shape almost
  * every panel in the dashboard actually has.
  *
- * The background is a two-stop gradient rather than a flat fill, with a
- * one-pixel highlight along the top edge. On a dark canvas that highlight is
- * what makes a card read as a raised surface instead of a hole, and it costs
- * nothing: two stops and an inset shadow, no extra element.
+ * The background is a two-stop gradient rather than a flat fill, running from a
+ * barely-there warm white at the top to the plain surface colour below, over a
+ * soft contact shadow. On a light canvas the shadow is what makes a card read as
+ * a sheet lying on the page; the gradient keeps it from looking like a flat
+ * rectangle of white, and it costs nothing — two stops, no extra element.
  */
 
 export function Card({
@@ -23,10 +24,10 @@ export function Card({
     <div
       className={cn(
         'rounded-[var(--radius-card)] border border-line bg-surface',
-        'bg-[linear-gradient(180deg,#111119,var(--color-surface))]',
-        'shadow-[0_1px_0_0_#ffffff0a_inset]',
+        'bg-[linear-gradient(180deg,#fdfefa,var(--color-surface))]',
+        'shadow-[0_1px_2px_-1px_#161c110f]',
         interactive &&
-          'transition-all duration-200 ease-[var(--ease-out-soft)] hover:border-line-strong hover:bg-[linear-gradient(180deg,#16161f,var(--color-raised))] hover:shadow-[0_1px_0_0_#ffffff12_inset,0_20px_40px_-28px_#000000e6]',
+          'transition-all duration-200 ease-[var(--ease-out-soft)] hover:border-line-strong hover:bg-[linear-gradient(180deg,var(--color-surface),var(--color-raised))] hover:shadow-[0_1px_2px_-1px_#161c1114,0_20px_40px_-28px_#161c1140]',
         className,
       )}
       {...props}

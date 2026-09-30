@@ -89,7 +89,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         'transition-colors duration-150 ease-[var(--ease-out-soft)]',
         'hover:border-line-strong focus:border-accent focus:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        invalid ? 'border-[#ef5f6880] focus:border-danger' : 'border-line',
+        invalid ? 'border-danger/50 focus:border-danger' : 'border-line',
         className,
       )}
       {...props}
@@ -114,7 +114,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         'transition-colors duration-150 ease-[var(--ease-out-soft)]',
         'hover:border-line-strong focus:border-accent focus:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        invalid ? 'border-[#ef5f6880] focus:border-danger' : 'border-line',
+        invalid ? 'border-danger/50 focus:border-danger' : 'border-line',
         className,
       )}
       {...props}
@@ -139,7 +139,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           'transition-colors duration-150 ease-[var(--ease-out-soft)]',
           'hover:border-line-strong focus:border-accent focus:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          invalid ? 'border-[#ef5f6880]' : 'border-line',
+          invalid ? 'border-danger/50' : 'border-line',
           className,
         )}
         {...props}

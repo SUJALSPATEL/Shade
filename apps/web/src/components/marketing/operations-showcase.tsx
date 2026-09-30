@@ -128,13 +128,13 @@ export function OperationsShowcase() {
           id={`operation-panel-${active}`}
           role="tabpanel"
           aria-labelledby={`operation-tab-${active}`}
-          className="min-w-0 bg-[#0a0a10] p-5 sm:p-7"
+          className="min-w-0 bg-raised p-5 sm:p-7"
         >
           <ul className="grid gap-2 sm:grid-cols-3">
             {detail.points.map((point) => (
               <li
                 key={point}
-                className="flex gap-2 rounded-lg border border-line bg-surface/60 px-3 py-2.5 text-[0.75rem] leading-relaxed text-ink-muted"
+                className="flex gap-2 rounded-lg border border-line bg-surface px-3 py-2.5 text-[0.75rem] leading-relaxed text-ink-muted"
               >
                 <CheckIcon />
                 <span>{point}</span>
@@ -241,7 +241,7 @@ function ExtractVisual() {
       <ul className="divide-y divide-line">
         {fields.map((field) => (
           <li key={field.name} className="flex items-center gap-3 px-4 py-2.5">
-            <span className="w-40 shrink-0 truncate font-mono text-[0.6875rem] text-[#7fc4f5]">
+            <span className="w-40 shrink-0 truncate font-mono text-[0.6875rem] text-info">
               {field.name}
             </span>
 

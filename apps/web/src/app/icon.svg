@@ -1,18 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!--
+    The Shade mark: a striped shop awning — a canopy curving over the top, a
+    bright gap, a row of scallops. The shape is what makes shade.
+
+    Kept in sync with `LogoMark` in `components/brand/logo.tsx`, which derives
+    the same geometry from three constants. This file is the static copy: Next
+    serves it as the favicon, and it has to stand alone as plain SVG.
+
+    Transparent, with no background tile, so the mark takes on whatever the
+    browser chrome behind it is rather than sitting in a coloured square.
+  -->
   <defs>
-    <linearGradient id="p" x1="6" y1="4" x2="20" y2="24" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#d9d9e6"/>
-    </linearGradient>
-    <linearGradient id="c" x1="12" y1="10" x2="26" y2="30" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#8b78e8"/>
-      <stop offset="1" stop-color="#4c3a9e"/>
-    </linearGradient>
+    <!-- The silhouette. Stripes are painted full-height through this mask, so
+         everything outside the awning — above the dome, below the scallops, and
+         the gap between them — is simply never painted. -->
+    <mask id="awning" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <path d="M3 21A13 13 0 0 1 29 21Z" fill="#fff"/>
+      <path d="M3 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M5.88889 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M8.77778 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M11.66667 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M14.55556 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M17.44444 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M20.33333 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M23.22222 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+      <path d="M26.11111 22.6a1.44444 1.44444 0 0 0 2.88889 0Z" fill="#fff"/>
+    </mask>
   </defs>
-  <rect width="32" height="32" rx="7" fill="#0a0a0e"/>
-  <rect x="11" y="9" width="16" height="19" rx="3.5" fill="url(#c)" opacity="0.85"/>
-  <rect x="5" y="4" width="16" height="19" rx="3.5" fill="url(#p)"/>
-  <rect x="8" y="9" width="10" height="1.6" rx="0.8" fill="#6e56cf"/>
-  <rect x="8" y="13" width="8" height="1.6" rx="0.8" fill="#b9b9c8"/>
-  <rect x="8" y="17" width="9.5" height="1.6" rx="0.8" fill="#b9b9c8"/>
+
+  <!-- Nine stripes, odd so the mark starts and ends on leaf and reads as
+       symmetrical. Even would put lime on one edge and leaf on the other. -->
+  <g mask="url(#awning)">
+    <rect x="3" y="0" width="2.88889" height="32" fill="#7fae3a"/>
+    <rect x="5.88889" y="0" width="2.88889" height="32" fill="#c3d93f"/>
+    <rect x="8.77778" y="0" width="2.88889" height="32" fill="#7fae3a"/>
+    <rect x="11.66667" y="0" width="2.88889" height="32" fill="#c3d93f"/>
+    <rect x="14.55556" y="0" width="2.88889" height="32" fill="#7fae3a"/>
+    <rect x="17.44444" y="0" width="2.88889" height="32" fill="#c3d93f"/>
+    <rect x="20.33333" y="0" width="2.88889" height="32" fill="#7fae3a"/>
+    <rect x="23.22222" y="0" width="2.88889" height="32" fill="#c3d93f"/>
+    <rect x="26.11111" y="0" width="2.88889" height="32" fill="#7fae3a"/>
+  </g>
 </svg>

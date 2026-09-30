@@ -28,13 +28,16 @@ export function HeroPreview() {
 
   return (
     <div className="relative">
-      {/* The light the whole thing sits in. Two offset glows, blurred well past
-          the frame so the panel reads as lit rather than as outlined. */}
+      {/* The light the whole thing sits in: a lime wash bleeding up from the
+          left, the accent on the right, blurred well past the frame so the
+          panel reads as lit rather than as outlined. Weak by design — colour
+          that would read as atmosphere over black reads as a stain over white,
+          so this sits at roughly a third of the alpha a dark theme would use. */}
       <div
         className="pointer-events-none absolute -inset-x-10 -top-10 bottom-0 -z-10 opacity-70 blur-3xl"
         style={{
           backgroundImage:
-            'radial-gradient(38rem 18rem at 25% 12%, #6e56cf4d, transparent 62%), radial-gradient(34rem 16rem at 78% 30%, #4f9cf033, transparent 64%)',
+            'radial-gradient(38rem 18rem at 25% 12%, #c3d93f3d, transparent 62%), radial-gradient(34rem 16rem at 78% 30%, #4d7c2226, transparent 64%)',
         }}
         aria-hidden="true"
       />
@@ -100,7 +103,7 @@ function WindowChrome() {
 
 function DocumentPane() {
   return (
-    <div className="relative border-line bg-[#0a0a10] p-5 sm:p-6 lg:border-r">
+    <div className="relative border-line bg-raised p-5 sm:p-6 lg:border-r">
       <div className="mb-3 flex items-center justify-between">
         <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-faint">
           Source · page 1 of 14
@@ -108,9 +111,12 @@ function DocumentPane() {
         <span className="font-mono text-[0.625rem] text-ink-faint">5 regions</span>
       </div>
 
-      {/* The paper. The one light surface in the product, and the only place on
-          this page where the palette inverts — which is the point. */}
-      <div className="relative rounded-lg bg-paper p-5 shadow-[0_20px_50px_-24px_#000000f2] sm:p-6">
+      {/* The paper. A white sheet lying on the tinted desk of the surrounding
+          pane — which is the relationship the whole product is about, drawn in
+          one element. The shadow is what puts it on the desk rather than in it,
+          so it is short and soft: a long dark shadow under a sheet of paper is
+          the visual grammar of a slide deck, not of a document. */}
+      <div className="relative rounded-lg bg-paper p-5 shadow-[0_1px_2px_#161c111f,0_16px_32px_-20px_#161c1133] sm:p-6">
         <div className="space-y-4">
           {/* heading */}
           <Region label="heading" tone="heading">
@@ -137,7 +143,7 @@ function DocumentPane() {
                   className="flex-1 rounded-t-[3px]"
                   style={{
                     height: `${height}%`,
-                    background: `linear-gradient(180deg, #8b78e8, #6e56cf)`,
+                    background: 'linear-gradient(180deg, #7fae3a, #4d7c22)',
                     opacity: 0.35 + (index / 5) * 0.65,
                   }}
                 />
@@ -164,7 +170,7 @@ function DocumentPane() {
                   <tr key={row[0]} className="border-b border-[#16161d]/10 last:border-0">
                     <td className="py-1 pr-2">{row[0]}</td>
                     <td className="py-1 pr-2 text-right">{row[1]}</td>
-                    <td className="py-1 text-right text-[#1f7a52]">{row[2]}</td>
+                    <td className="py-1 text-right text-positive">{row[2]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -202,17 +208,19 @@ function Region({
     <div
       className="relative rounded-[4px] px-2 pb-2 pt-3"
       style={{
-        outline: `1px dashed color-mix(in srgb, ${colour} 55%, transparent)`,
+        outline: `1px dashed color-mix(in srgb, ${colour} 60%, transparent)`,
         outlineOffset: '2px',
-        background: `color-mix(in srgb, ${colour} 5%, transparent)`,
+        background: `color-mix(in srgb, ${colour} 7%, transparent)`,
       }}
     >
+      {/* The label sits on the paper, not on the pane, because that is what it
+          is covering — the top edge of the dashed outline. It is filled with
+          the paper colour so the dash breaks behind the text instead of running
+          through it, which is the difference between an annotation and a
+          collision. */}
       <span
-        className="absolute -top-[0.6rem] left-1.5 rounded-[3px] px-1 py-px font-mono text-[0.5625rem] uppercase leading-tight tracking-[0.06em]"
-        style={{
-          color: colour,
-          background: '#0a0a10',
-        }}
+        className="absolute -top-[0.6rem] left-1.5 rounded-[3px] bg-paper px-1 py-px font-mono text-[0.5625rem] font-semibold uppercase leading-tight tracking-[0.06em]"
+        style={{ color: colour }}
       >
         {label}
       </span>
@@ -221,12 +229,22 @@ function Region({
   );
 }
 
+/** A stand-in for a line of prose: a bar in the ink colour, not a grey. */
 function Bar({ w }: { w: string }) {
-  return <div className="h-1.5 rounded-full bg-[#dcdce4]" style={{ width: w }} />;
+  return <div className="h-1.5 rounded-full bg-paper-ink/15" style={{ width: w }} />;
 }
 
 /* ── Right: the output ───────────────────────────────────────────────────── */
 
+/**
+ * The output half.
+ *
+ * This is the one dark surface on the page, and the contrast is the argument:
+ * the left pane is a document a person reads, the right pane is machine output.
+ * Rendering the JSON on white would file it with the marketing copy; the dark
+ * panel is what tells a visitor, before they read a token, that this is the
+ * artifact they would actually pipe somewhere.
+ */
 function OutputPane({
   tab,
   onTabChange,
@@ -235,8 +253,8 @@ function OutputPane({
   onTabChange: (tab: 'markdown' | 'json') => void;
 }) {
   return (
-    <div className="flex min-w-0 flex-col bg-[#0b0b12]">
-      <div className="flex items-center gap-1 border-b border-line px-3 py-2">
+    <div className="flex min-w-0 flex-col bg-code">
+      <div className="flex items-center gap-1 border-b border-code-line px-3 py-2">
         {(['markdown', 'json'] as const).map((value) => (
           <button
             key={value}
@@ -246,15 +264,15 @@ function OutputPane({
             className={cn(
               'rounded-md px-2.5 py-1 font-mono text-[0.6875rem] uppercase tracking-[0.08em] transition-colors',
               tab === value
-                ? 'bg-raised text-ink'
-                : 'text-ink-faint hover:bg-raised/60 hover:text-ink-muted',
+                ? 'bg-code-raised text-code-ink'
+                : 'text-code-muted hover:bg-code-raised/60 hover:text-code-ink',
             )}
           >
             {value}
           </button>
         ))}
 
-        <span className="ml-auto hidden font-mono text-[0.625rem] text-ink-faint sm:block">
+        <span className="ml-auto hidden font-mono text-[0.625rem] text-code-muted sm:block">
           {tab === 'markdown' ? '1,284 chars' : '3.1 KB'}
         </span>
       </div>
@@ -268,7 +286,7 @@ function OutputPane({
 
 function MarkdownSample() {
   return (
-    <pre className="overflow-x-auto font-mono text-[0.6875rem] leading-[1.85] text-ink-muted">
+    <pre className="overflow-x-auto font-mono text-[0.6875rem] leading-[1.85] text-code-muted">
       <code>
         <Line n={1}>
           <Tok tone="h"># Q3 Annual Report</Tok>
@@ -314,7 +332,7 @@ function MarkdownSample() {
 
 function JsonSample() {
   return (
-    <pre className="overflow-x-auto font-mono text-[0.6875rem] leading-[1.85] text-ink-muted">
+    <pre className="overflow-x-auto font-mono text-[0.6875rem] leading-[1.85] text-code-muted">
       <code>
         <Line n={1}>{'{'}</Line>
         <Line n={2}>
@@ -378,7 +396,7 @@ function JsonSample() {
 function Line({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <div className="flex gap-3">
-      <span className="w-4 shrink-0 select-none text-right text-ink-faint/50 tabular-nums">
+      <span className="w-4 shrink-0 select-none text-right text-code-comment tabular-nums">
         {n}
       </span>
       <span className="min-w-0 whitespace-pre-wrap">{children}</span>
@@ -386,14 +404,15 @@ function Line({ n, children }: { n: number; children: React.ReactNode }) {
   );
 }
 
+/** Syntax colour for the two samples. Only ever applied on `bg-code`. */
 const TOKENS = {
-  h: 'text-accent-bright font-semibold',
-  key: 'text-[#7fc4f5]',
-  str: 'text-positive',
-  num: 'text-warning',
-  link: 'text-[#7fc4f5]',
-  dim: 'text-ink-muted',
-  marker: 'text-ink-faint italic',
+  h: 'text-code-ink font-semibold',
+  key: 'text-code-key',
+  str: 'text-code-string',
+  num: 'text-code-number',
+  link: 'text-code-key',
+  dim: 'text-code-muted',
+  marker: 'text-code-comment italic',
 } as const;
 
 function Tok({ tone, children }: { tone: keyof typeof TOKENS; children: React.ReactNode }) {

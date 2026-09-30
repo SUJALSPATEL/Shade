@@ -79,7 +79,7 @@ export function ErrorState({
         className,
       )}
     >
-      <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-[#ef5f6840] bg-danger-soft text-danger">
+      <div className="mb-4 flex size-11 items-center justify-center rounded-xl border border-danger/30 bg-danger-soft text-danger">
         <svg className="size-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path
             d="M10 6.5v4.25M10 13.75h.01M8.6 2.9 1.9 15a1.6 1.6 0 0 0 1.4 2.4h13.4A1.6 1.6 0 0 0 18.1 15L11.4 2.9a1.6 1.6 0 0 0-2.8 0Z"

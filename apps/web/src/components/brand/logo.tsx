@@ -8,27 +8,90 @@ import { cn } from '@/lib/cn';
  * the part that reads a document, and the part that hands the result to an
  * agent.
  *
- * The mark is the name taken literally. A white page sits in front; the same
- * page, offset down and to the right and dimmed, sits behind it. That offset
- * copy is the shade — what the document casts once something has read it, and
- * the structured representation that outlives the original. It is also the
- * product's core claim in one shape: the page is still there, and now there is
- * something behind it.
+ * The mark is a shop awning: a striped canopy that curves over the top, breaks
+ * on a bright gap, and finishes in a row of scallops. It is the name taken
+ * literally — the thing that makes shade — and it is the shape a document
+ * product wants anyway, because an awning is a *cover*: something laid over
+ * what is underneath, which is exactly the relationship between the source PDF
+ * and the structure Shade returns.
  *
- * Drawn rather than typeset. A wordmark in a system font would be a different
- * logo on every operating system, which for a product whose whole subject is
+ * Drawn rather than typeset, and built from one loop rather than from
+ * hand-placed rectangles. A wordmark in a system font would be a different logo
+ * on every operating system, which for a product whose whole subject is
  * faithful reproduction would be an odd thing to accept.
  */
+
+/** Alternating leaf and lime. Two values, one loop, so the mark stays regular. */
+const LEAF = '#7fae3a';
+const LIME = '#c3d93f';
+
+/**
+ * The geometry, derived once.
+ *
+ * Every number in the drawing comes off three constants — the radius of the
+ * dome, the number of stripes, and the height of the gap — so the mark cannot
+ * drift out of proportion when one of them changes. Nine stripes because an odd
+ * count starts and ends on leaf, which makes the mark symmetrical; an even
+ * count would leave lime on one edge and leaf on the other and read as a
+ * mistake at 16px, which is the size most people will meet it at.
+ */
+const STRIPES = 9;
+
+const AWNING = (() => {
+  const r = 13; // dome radius
+  const cx = 16; // centre
+  const flat = 21; // where the dome meets the gap
+  const band = 1.6; // the gap between canopy and scallops
+  const left = cx - r;
+  const right = cx + r;
+  const w = (right - left) / STRIPES;
+  const sr = w / 2; // scallop radius
+  const sy = flat + band; // the line the scallops hang from
+
+  return {
+    r,
+    cx,
+    flat,
+    left,
+    right,
+    w,
+    sr,
+    sy,
+    /** The canopy: a half-disc sitting on `flat`. */
+    dome: `M${left} ${flat}A${r} ${r} 0 0 1 ${right} ${flat}Z`,
+    stripes: Array.from({ length: STRIPES }, (_, i) => ({
+      x: left + i * w,
+      cx: left + (i + 0.5) * w,
+      fill: i % 2 === 0 ? LEAF : LIME,
+    })),
+    /** One scallop, hanging below `sy`. Sweep 0 so the arc bulges downward. */
+    scallop: (at: number) => `M${at - sr} ${sy}a${sr} ${sr} 0 0 0 ${sr * 2} 0Z`,
+  };
+})();
+
 export function LogoMark({
   className,
   size = 28,
-  /** Set on the landing page's dark hero, where the shadow needs more contrast. */
-  glow = false,
 }: {
   className?: string;
   size?: number;
-  glow?: boolean;
 }) {
+  /**
+   * The mask is what makes the shape work.
+   *
+   * The stripes are full-height rectangles running past both ends of the mark;
+   * the mask is the awning silhouette itself. Everything outside that silhouette
+   * — above the dome, below the scallops, and the gap between them — is simply
+   * never painted, which means the gap shows whatever is behind the mark rather
+   * than a hardcoded white. That is the difference between a logo that works on
+   * the app's off-white canvas and one that only works on the one background it
+   * was drawn against.
+   *
+   * The id is static rather than unique per instance. Every instance defines the
+   * byte-identical mask, so a second copy in the document resolving to the first
+   * one's definition renders the same pixels; `useId` would buy nothing and
+   * would force this component to be a client component.
+   */
   return (
     <svg
       width={size}
@@ -40,43 +103,36 @@ export function LogoMark({
       aria-label="Shade"
     >
       <defs>
-        <linearGradient id="shade-page" x1="6" y1="4" x2="20" y2="24" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#ffffff" />
-          <stop offset="1" stopColor="#dcdce8" />
-        </linearGradient>
-        <linearGradient id="shade-cast" x1="12" y1="10" x2="26" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#9d8bf5" />
-          <stop offset="1" stopColor="#4c3a9e" />
-        </linearGradient>
+        <mask id="shade-awning" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+          <path d={AWNING.dome} fill="#fff" />
+          {AWNING.stripes.map((stripe) => (
+            <path key={`s${stripe.cx}`} d={AWNING.scallop(stripe.cx)} fill="#fff" />
+          ))}
+        </mask>
       </defs>
 
-      {/* The cast shape. Drawn first so the page overlaps it. */}
-      <rect
-        x="11"
-        y="9"
-        width="16"
-        height="19"
-        rx="3.5"
-        fill="url(#shade-cast)"
-        opacity={glow ? 1 : 0.9}
-      />
-
-      {/* The page. */}
-      <rect x="5" y="4" width="16" height="19" rx="3.5" fill="url(#shade-page)" />
-
-      {/* Three lines of text on the page — enough to read as a document, few
-          enough to survive being rendered at 16px in a browser tab. The first
-          is the accent because the first thing the engine finds in a document
-          is its heading. */}
-      <rect x="8" y="9" width="10" height="1.6" rx="0.8" fill="#6e56cf" />
-      <rect x="8" y="13" width="8" height="1.6" rx="0.8" fill="#bcbccb" />
-      <rect x="8" y="17" width="9.5" height="1.6" rx="0.8" fill="#bcbccb" />
+      <g mask="url(#shade-awning)">
+        {AWNING.stripes.map((stripe) => (
+          <rect
+            key={`b${stripe.cx}`}
+            x={stripe.x}
+            y="0"
+            width={AWNING.w}
+            height="32"
+            fill={stripe.fill}
+          />
+        ))}
+      </g>
     </svg>
   );
 }
 
 /**
  * The wordmark.
+ *
+ * Set in the display serif, not the interface sans. The name and the headline
+ * are the same voice — a stranger who reads "Shade" in the header and then reads
+ * the headline below it should not be meeting two different products.
  *
  * `block` stacks the tagline under the name, which is what the landing page and
  * the auth screens use; the default inline form is for the sidebar and the
@@ -101,8 +157,8 @@ export function Wordmark({
       <span className={cn('flex min-w-0 flex-col', block ? 'gap-0.5' : 'gap-0')}>
         <span
           className={cn(
-            'font-semibold leading-none tracking-[-0.025em] text-ink',
-            size === 'lg' ? 'text-lg' : size === 'md' ? 'text-[0.9375rem]' : 'text-sm',
+            'font-serif font-semibold leading-none tracking-[-0.02em] text-ink',
+            size === 'lg' ? 'text-xl' : size === 'md' ? 'text-base' : 'text-sm',
           )}
         >
           Shade

@@ -45,12 +45,14 @@ export function SiteFooter({ className }: { className?: string }) {
   return (
     <footer className={cn('relative mt-8 border-t border-line', className)}>
       {/* A wash of the brand colour rising from the bottom edge, so the page
-          ends on the same light it opened with rather than on a hard border. */}
+          ends on the same light it opened with rather than on a hard border.
+          Warmer and wider than the hero's: the footer is where the lemon in the
+          palette gets to sit on its own, without white panels over it. */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-64"
         style={{
           backgroundImage:
-            'radial-gradient(40rem 16rem at 50% 130%, #6e56cf26, transparent 70%)',
+            'radial-gradient(40rem 16rem at 50% 130%, #c3d93f40, transparent 70%)',
         }}
         aria-hidden="true"
       />

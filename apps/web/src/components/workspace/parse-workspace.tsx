@@ -10,6 +10,7 @@ import { useResource } from '@/lib/hooks/use-resource';
 import { uploadAndProcess, type UploadProgress } from '@/lib/upload';
 import { Button } from '@/components/ui/button';
 import { JobStatusBadge } from '@/components/ui/badge';
+import { LogoMark } from '@/components/brand/logo';
 import { ErrorState } from '@/components/ui/states';
 import { UploadDropzone } from './upload-dropzone';
 import { ProcessingPanel, type ProcessingFailure } from './processing-panel';
@@ -239,8 +240,10 @@ export function ParseWorkspace() {
         <div className="mx-auto flex h-14 w-full max-w-[110rem] items-center gap-4 px-4 sm:px-6">
           <Link href="/" className="shrink-0 rounded-lg" aria-label="Shade home">
             <span className="flex items-center gap-2">
-              <LogoMarkSmall />
-              <span className="text-sm font-semibold tracking-[-0.02em] text-ink">Shade</span>
+              <LogoMark size={20} />
+              <span className="font-serif text-[0.9375rem] font-semibold tracking-[-0.02em] text-ink">
+                Shade
+              </span>
             </span>
           </Link>
 
@@ -299,7 +302,7 @@ export function ParseWorkspace() {
             {failure ? (
               <div
                 role="alert"
-                className="mt-5 rounded-[var(--radius-card)] border border-[#ef5f6840] bg-danger-soft px-4 py-3.5 text-center"
+                className="mt-5 rounded-[var(--radius-card)] border border-danger/30 bg-danger-soft px-4 py-3.5 text-center"
               >
                 <p className="text-[0.8125rem] text-danger">{failure.message}</p>
                 {quotaExhausted ? (
@@ -450,16 +453,4 @@ function buildPages(pageCount: number): Array<{ pageNumber: number; width: numbe
     width: 595,
     height: 842,
   }));
-}
-
-function LogoMarkSmall() {
-  return (
-    <svg width={20} height={20} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <rect x="11" y="9" width="16" height="19" rx="3.5" fill="#4c3a9e" />
-      <rect x="5" y="4" width="16" height="19" rx="3.5" fill="#ffffff" />
-      <rect x="8" y="9" width="10" height="1.6" rx="0.8" fill="#6e56cf" />
-      <rect x="8" y="13" width="8" height="1.6" rx="0.8" fill="#b9b9c8" />
-      <rect x="8" y="17" width="9.5" height="1.6" rx="0.8" fill="#b9b9c8" />
-    </svg>
-  );
 }
